@@ -15,8 +15,5 @@
       "src": "/(.*)",
       "dest": "/frontend/$1"
     }
-  ],
-  "env": {
-    "REACT_APP_API_BASE_URL": "@react_app_api_base_url"
-  }
+  ]
 } 
