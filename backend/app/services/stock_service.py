@@ -370,6 +370,46 @@ class StockService:
                 "exchange": "NYSE",
                 "sector": "Financial Services",
                 "industry": "Credit Services"
+            },
+            "TSLA": {
+                "name": "Tesla Inc.",
+                "currentPrice": 245.30,
+                "previousClose": 240.10,
+                "change": 5.20,
+                "changePercent": 2.17,
+                "high": 248.50,
+                "low": 239.80,
+                "volume": 65000000,
+                "marketCap": 780000000000,  # 780B
+                "peRatio": 65.8,
+                "dividendYield": 0.0,
+                "beta": 2.3,
+                "fiftyTwoWeekHigh": 300.00,
+                "fiftyTwoWeekLow": 150.50,
+                "avgVolume": 70000000,
+                "exchange": "NASDAQ",
+                "sector": "Consumer Cyclical",
+                "industry": "Auto Manufacturers"
+            },
+            "PLTR": {
+                "name": "Palantir Technologies Inc.",
+                "currentPrice": 28.50,
+                "previousClose": 27.80,
+                "change": 0.70,
+                "changePercent": 2.52,
+                "high": 29.20,
+                "low": 27.50,
+                "volume": 25000000,
+                "marketCap": 65000000000,  # 65B
+                "peRatio": 285.0,
+                "dividendYield": 0.0,
+                "beta": 1.8,
+                "fiftyTwoWeekHigh": 35.00,
+                "fiftyTwoWeekLow": 15.50,
+                "avgVolume": 30000000,
+                "exchange": "NYSE",
+                "sector": "Technology",
+                "industry": "Software"
             }
         }
         
@@ -507,19 +547,85 @@ class StockService:
                 StockSuggestion(symbol="TSLA", name="Tesla Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
                 StockSuggestion(symbol="JPM", name="JPMorgan Chase & Co.", exchange="NYSE", type="Common Stock", country="US"),
                 StockSuggestion(symbol="JNJ", name="Johnson & Johnson", exchange="NYSE", type="Common Stock", country="US"),
-                StockSuggestion(symbol="PG", name="Procter & Gamble Co.", exchange="NYSE", type="Common Stock", country="US")
+                StockSuggestion(symbol="PG", name="Procter & Gamble Co.", exchange="NYSE", type="Common Stock", country="US"),
+                StockSuggestion(symbol="NFLX", name="Netflix Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="ADBE", name="Adobe Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="PYPL", name="PayPal Holdings Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="INTC", name="Intel Corporation", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="AMD", name="Advanced Micro Devices Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="CRM", name="Salesforce Inc.", exchange="NYSE", type="Common Stock", country="US"),
+                StockSuggestion(symbol="ORCL", name="Oracle Corporation", exchange="NYSE", type="Common Stock", country="US"),
+                StockSuggestion(symbol="CSCO", name="Cisco Systems Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="QCOM", name="Qualcomm Incorporated", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="AVGO", name="Broadcom Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="TXN", name="Texas Instruments Incorporated", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="MU", name="Micron Technology Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="ADI", name="Analog Devices Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="KLAC", name="KLA Corporation", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="LRCX", name="Lam Research Corporation", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="ASML", name="ASML Holding N.V.", exchange="NASDAQ", type="Common Stock", country="NL"),
+                StockSuggestion(symbol="AMAT", name="Applied Materials Inc.", exchange="NASDAQ", type="Common Stock", country="US")
             ]
+            
+            # 한글-영문 매핑 딕셔너리
+            korean_mapping = {
+                "팔란티어": "palantir",
+                "테슬라": "tesla",
+                "애플": "apple",
+                "마이크로소프트": "microsoft",
+                "구글": "google",
+                "알파벳": "alphabet",
+                "아마존": "amazon",
+                "엔비디아": "nvidia",
+                "메타": "meta",
+                "넷플릭스": "netflix",
+                "버크셔": "berkshire",
+                "엘리릴리": "eli lilly",
+                "타이완반도체": "taiwan semiconductor",
+                "비자": "visa",
+                "모건": "jpmorgan",
+                "존슨앤존슨": "johnson",
+                "프록터앤갬블": "procter",
+                "페이팔": "paypal",
+                "어도비": "adobe",
+                "인텔": "intel",
+                "amd": "amd",
+                "퀄컴": "qualcomm",
+                "브로드컴": "broadcom",
+                "텍사스인스트루먼트": "texas instruments",
+                "마이크론": "micron",
+                "아날로그디바이스": "analog devices",
+                "케이엘에이": "kla",
+                "라믹스": "lam research",
+                "asml": "asml",
+                "어플라이드머티어리얼": "applied materials"
+            }
             
             # 검색어와 매칭 (대소문자 무시)
             query_lower = query.lower()
             matched_stocks = []
             
+            # 한글 검색어를 영어로 변환
+            english_query = korean_mapping.get(query_lower, query_lower)
+            
             for stock in mock_stocks:
                 # 심볼, 이름, 한글 번역명으로 검색
-                if (query_lower in stock.symbol.lower() or 
-                    query_lower in stock.name.lower() or
-                    query_lower in self._translate_to_korean(stock.name).lower()):
+                stock_name_lower = stock.name.lower()
+                stock_symbol_lower = stock.symbol.lower()
+                
+                # 직접 매칭
+                if (query_lower in stock_symbol_lower or 
+                    query_lower in stock_name_lower or
+                    english_query in stock_name_lower):
                     matched_stocks.append(stock)
+                    continue
+                
+                # 한글 매핑을 통한 검색
+                for korean, english in korean_mapping.items():
+                    if (query_lower in korean and english in stock_name_lower) or \
+                       (english in query_lower and english in stock_name_lower):
+                        matched_stocks.append(stock)
+                        break
             
             # 검색 결과가 없으면 인기 주식들 반환
             if not matched_stocks:
@@ -690,6 +796,16 @@ class StockService:
                     "revenue": 60922000000,  # 60.9B
                     "netIncome": 29760000000,  # 29.8B
                     "operatingIncome": 32972000000  # 33.0B
+                },
+                "TSLA": {
+                    "revenue": 96773000000,  # 96.8B
+                    "netIncome": 14997000000,  # 15.0B
+                    "operatingIncome": 8890000000  # 8.9B
+                },
+                "PLTR": {
+                    "revenue": 2225000000,  # 2.2B
+                    "netIncome": 209000000,  # 209M
+                    "operatingIncome": 119000000  # 119M
                 }
             }
             
@@ -787,6 +903,30 @@ class StockService:
                     {"date": "2022-06-07", "amount": 0.375},
                     {"date": "2022-03-08", "amount": 0.375},
                     {"date": "2021-12-07", "amount": 0.375}
+                ],
+                "TSLA": [
+                    {"date": "2024-01-15", "amount": 0.00},
+                    {"date": "2023-10-15", "amount": 0.00},
+                    {"date": "2023-07-15", "amount": 0.00},
+                    {"date": "2023-04-15", "amount": 0.00},
+                    {"date": "2023-01-15", "amount": 0.00},
+                    {"date": "2022-10-15", "amount": 0.00},
+                    {"date": "2022-07-15", "amount": 0.00},
+                    {"date": "2022-04-15", "amount": 0.00},
+                    {"date": "2022-01-15", "amount": 0.00},
+                    {"date": "2021-10-15", "amount": 0.00}
+                ],
+                "PLTR": [
+                    {"date": "2024-01-15", "amount": 0.00},
+                    {"date": "2023-10-15", "amount": 0.00},
+                    {"date": "2023-07-15", "amount": 0.00},
+                    {"date": "2023-04-15", "amount": 0.00},
+                    {"date": "2023-01-15", "amount": 0.00},
+                    {"date": "2022-10-15", "amount": 0.00},
+                    {"date": "2022-07-15", "amount": 0.00},
+                    {"date": "2022-04-15", "amount": 0.00},
+                    {"date": "2022-01-15", "amount": 0.00},
+                    {"date": "2021-10-15", "amount": 0.00}
                 ]
             }
             
@@ -915,6 +1055,50 @@ class StockService:
                     "returnOnEquity": 0.23,
                     "returnOnAssets": 0.18,
                     "debtToEquity": 0.05
+                },
+                "TSLA": {
+                    "name": "Tesla Inc.",
+                    "shortName": "Tesla",
+                    "sector": "Consumer Cyclical",
+                    "industry": "Auto Manufacturers",
+                    "country": "United States",
+                    "website": "https://www.tesla.com",
+                    "description": "테슬라는 전기자동차, 에너지 저장 및 태양광 패널을 설계, 개발, 제조, 판매 및 서비스하는 기업입니다. Model S, Model 3, Model X, Model Y 등의 전기자동차와 Powerwall, Powerpack 등의 에너지 저장 제품을 제공합니다.",
+                    "originalDescription": "Tesla, Inc. designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems in the United States, China, and internationally.",
+                    "employees": 127855,
+                    "founded": "2003",
+                    "ceo": "Elon Musk",
+                    "headquarters": "Austin, Texas, United States",
+                    "marketCap": 780000000000,
+                    "enterpriseValue": 750000000000,
+                    "revenue": 96773000000,
+                    "profitMargin": 0.15,
+                    "operatingMargin": 0.09,
+                    "returnOnEquity": 0.25,
+                    "returnOnAssets": 0.12,
+                    "debtToEquity": 0.08
+                },
+                "PLTR": {
+                    "name": "Palantir Technologies Inc.",
+                    "shortName": "Palantir",
+                    "sector": "Technology",
+                    "industry": "Software",
+                    "country": "United States",
+                    "website": "https://www.palantir.com",
+                    "description": "팔란티어는 정부와 상업 고객을 위한 데이터 분석 및 인공지능 플랫폼을 구축하는 기업입니다. Gotham, Foundry, Apollo 등의 소프트웨어 플랫폼을 통해 대규모 데이터 세트를 분석하고 의사결정을 지원합니다.",
+                    "originalDescription": "Palantir Technologies Inc. builds and deploys software platforms for the intelligence community in the United States to assist in counterterrorism investigations and operations.",
+                    "employees": 3800,
+                    "founded": "2003",
+                    "ceo": "Alex Karp",
+                    "headquarters": "Denver, Colorado, United States",
+                    "marketCap": 65000000000,
+                    "enterpriseValue": 60000000000,
+                    "revenue": 2225000000,
+                    "profitMargin": 0.09,
+                    "operatingMargin": 0.05,
+                    "returnOnEquity": 0.12,
+                    "returnOnAssets": 0.08,
+                    "debtToEquity": 0.02
                 }
             }
             
