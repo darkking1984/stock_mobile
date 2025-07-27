@@ -1,12 +1,41 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import stock, auth
-from app.database import engine
+from app.database import engine, SessionLocal
 from app.models import user
+from app.core.security import get_password_hash
 from datetime import datetime
 
 # 데이터베이스 테이블 생성
 user.Base.metadata.create_all(bind=engine)
+
+# 테스트 사용자 자동 생성
+def create_test_user():
+    try:
+        db = SessionLocal()
+        
+        # 기존 사용자 확인
+        existing_user = db.query(user.User).filter(user.User.username == "coase").first()
+        
+        if not existing_user:
+            # 테스트 사용자 생성
+            test_user = user.User(
+                username="coase",
+                email="coase@example.com",
+                hashed_password=get_password_hash("password123")
+            )
+            db.add(test_user)
+            db.commit()
+            print("✅ 테스트 사용자 생성 완료: coase / password123")
+        else:
+            print("✅ 기존 사용자 존재: coase")
+            
+        db.close()
+    except Exception as e:
+        print(f"⚠️ 사용자 생성 중 오류: {e}")
+
+# 애플리케이션 시작 시 테스트 사용자 생성
+create_test_user()
 
 app = FastAPI(
     title="Stock Dashboard API",
