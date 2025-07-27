@@ -492,7 +492,7 @@ class StockService:
             # 캐시된 데이터 사용
             cached_data = self._get_cache(self._get_cache_key('TOP_MARKET_CAP'))
             if cached_data:
-                print(f"Returning cached top market cap stocks")
+                print(f"✅ Returning cached top market cap stocks")
                 return cached_data
 
             # 주요 대형주 티커 리스트 (시가총액 순)
@@ -501,16 +501,17 @@ class StockService:
                 "META", "BRK-B", "LLY", "TSM", "V"
             ]
             
-            print(f"Fetching top market cap stocks for {len(top_tickers)} tickers")
+            print(f"🔄 Fetching top market cap stocks for {len(top_tickers)} tickers")
+            print(f"📊 Tickers: {', '.join(top_tickers)}")
             
             # 배치로 주식 정보 가져오기 (동시 처리)
             stock_infos = await self.get_stock_info_batch(top_tickers)
             
             # 결과 변환
             top_stocks = []
-            for stock_info in stock_infos:
+            for i, stock_info in enumerate(stock_infos):
                 if stock_info and stock_info.marketCap > 0:
-                    top_stocks.append({
+                    stock_data = {
                         "symbol": stock_info.symbol,
                         "name": stock_info.name,
                         "price": stock_info.currentPrice,
@@ -518,12 +519,16 @@ class StockService:
                         "changePercent": stock_info.changePercent,
                         "marketCap": stock_info.marketCap,
                         "volume": stock_info.volume
-                    })
+                    }
+                    top_stocks.append(stock_data)
+                    print(f"✅ {stock_info.symbol}: ${stock_info.currentPrice:.2f} (시총: ${stock_info.marketCap/1e9:.1f}B)")
+                else:
+                    print(f"⚠️ {top_tickers[i]}: 데이터 없음 또는 시가총액 0")
             
             # 시가총액 순으로 정렬
             top_stocks.sort(key=lambda x: x.get("marketCap", 0), reverse=True)
             
-            print(f"Successfully fetched {len(top_stocks)} stocks")
+            print(f"🎉 Successfully fetched {len(top_stocks)} stocks")
             
             # 캐시에 저장
             self._set_cache(self._get_cache_key('TOP_MARKET_CAP'), top_stocks)
@@ -531,7 +536,11 @@ class StockService:
             return top_stocks[:10]  # 상위 10개만 반환
             
         except Exception as e:
-            raise Exception(f"Failed to get top market cap stocks: {str(e)}")
+            print(f"❌ Failed to get top market cap stocks: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            # 빈 리스트 반환하여 앱이 크래시되지 않도록 함
+            return []
 
     async def get_index_stocks(self, index_name: str) -> List[Dict[str, Any]]:
         """지수별 상위 주식 조회 (실시간)"""
