@@ -1359,7 +1359,7 @@ class StockService:
 
             print(f"🔄 Fetching top market cap stocks (Mock Data)")
 
-            # Mock 데이터로 시가총액 상위 10개 주식 (2025-07-27 기준 - 실제 Yahoo Finance 데이터)
+            # Mock 데이터로 시가총액 상위 10개 주식 (2025-07-27 기준 - 실제 Yahoo Finance 데이터) - 최신 업데이트
             top_stocks = [
                 {
                     "symbol": "NVDA",
@@ -1416,40 +1416,40 @@ class StockService:
                     "volume": 8239722
                 },
                 {
-                    "symbol": "TSLA",
-                    "name": "Tesla Inc.",
-                    "price": 245.30,
-                    "change": 5.20,
-                    "changePercent": 2.168,
-                    "marketCap": 1019435745280,  # 1.02T
-                    "volume": 98765432
+                    "symbol": "AVGO",
+                    "name": "Broadcom Inc.",
+                    "price": 290.18,
+                    "change": 1.47,
+                    "changePercent": 0.51,
+                    "marketCap": 1364852867072,  # 1.36T
+                    "volume": 11906123
+                },
+                {
+                    "symbol": "TSM",
+                    "name": "Taiwan Semiconductor Manufacturing Company Limited",
+                    "price": 245.6,
+                    "change": 4.0,
+                    "changePercent": 1.66,
+                    "marketCap": 1273809338368,  # 1.27T
+                    "volume": 11531815
                 },
                 {
                     "symbol": "BRK-B",
                     "name": "Berkshire Hathaway Inc.",
                     "price": 484.07,
                     "change": 3.47,
-                    "changePercent": 0.722,
+                    "changePercent": 0.72,
                     "marketCap": 1044361641984,  # 1.04T
                     "volume": 4194066
                 },
                 {
-                    "symbol": "LLY",
-                    "name": "Eli Lilly and Company",
-                    "price": 812.69,
-                    "change": 7.26,
-                    "changePercent": 0.901,
-                    "marketCap": 729581092864,  # 730B
-                    "volume": 2974840
-                },
-                {
-                    "symbol": "V",
-                    "name": "Visa Inc.",
-                    "price": 295.50,
-                    "change": 0.70,
-                    "changePercent": 0.24,
-                    "marketCap": 697477693440,  # 697B
-                    "volume": 15000000
+                    "symbol": "TSLA",
+                    "name": "Tesla, Inc.",
+                    "price": 316.06,
+                    "change": 10.76,
+                    "changePercent": 3.52,
+                    "marketCap": 1019435745280,  # 1.02T
+                    "volume": 147147702
                 }
             ]
 
