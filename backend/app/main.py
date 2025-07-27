@@ -14,23 +14,23 @@ def create_test_user():
     try:
         db = SessionLocal()
         
-        # 기존 사용자 확인
+        # 기존 사용자 삭제 (재생성을 위해)
         existing_user = db.query(user.User).filter(user.User.username == "coase").first()
-        
-        if not existing_user:
-            # 테스트 사용자 생성
-            test_user = user.User(
-                username="coase",
-                email="coase@example.com",
-                hashed_password=get_password_hash("password123")
-            )
-            db.add(test_user)
+        if existing_user:
+            db.delete(existing_user)
             db.commit()
-            print("✅ 테스트 사용자 생성 완료: coase / password123")
-            print(f"✅ 사용자 ID: {test_user.id}")
-        else:
-            print("✅ 기존 사용자 존재: coase")
-            print(f"✅ 사용자 ID: {existing_user.id}")
+            print("🗑️ 기존 사용자 삭제됨: coase")
+        
+        # 새로운 테스트 사용자 생성
+        test_user = user.User(
+            username="coase",
+            email="coase@example.com",
+            hashed_password=get_password_hash("password123")
+        )
+        db.add(test_user)
+        db.commit()
+        print("✅ 테스트 사용자 생성 완료: coase / password123")
+        print(f"✅ 사용자 ID: {test_user.id}")
             
         # 모든 사용자 목록 출력
         all_users = db.query(user.User).all()
