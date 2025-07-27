@@ -170,7 +170,7 @@ class StockService:
             return cached_data
         
         # Rate limiting: 더 긴 대기 시간 적용
-        await asyncio.sleep(2.0)  # 1.0s → 2.0s로 증가
+        await asyncio.sleep(3.0)  # 2.0s → 3.0s로 증가
         
         try:
             ticker = yf.Ticker(symbol)
@@ -250,12 +250,12 @@ class StockService:
             
         except HTTPError as e:
             if e.response.status_code == 429:
-                print(f"⚠️ Rate limit hit for {symbol}, waiting 10 seconds...")
-                await asyncio.sleep(10.0)  # 5s → 10s로 증가
+                print(f"⚠️ Rate limit hit for {symbol}, waiting 15 seconds...")
+                await asyncio.sleep(15.0)  # 10s → 15s로 증가
                 
                 # 재시도
                 try:
-                    await asyncio.sleep(5.0)  # 추가 대기
+                    await asyncio.sleep(8.0)  # 추가 대기 시간 증가
                     ticker = yf.Ticker(symbol)
                     info = ticker.info
                     
@@ -591,7 +591,7 @@ class StockService:
             raise Exception(f"Failed to get company description for {symbol}: {str(e)}") 
 
     async def get_top_market_cap_stocks(self) -> List[Dict[str, Any]]:
-        """시가총액 상위 10개 주식 조회 (최적화된 배치 처리)"""
+        """시가총액 상위 10개 주식 조회 (단순화된 처리)"""
         try:
             # 캐시된 데이터 사용
             cached_data = self._get_cache(self._get_cache_key('TOP_MARKET_CAP'))
@@ -608,17 +608,46 @@ class StockService:
             print(f"🔄 Fetching top market cap stocks for {len(top_tickers)} tickers")
             print(f"📊 Tickers: {', '.join(top_tickers)}")
             
-            # 임시: 단일 주식으로 테스트
-            print("🧪 Testing with single stock first...")
-            try:
-                test_stock = await self.get_stock_info("AAPL")
-                print(f"✅ Test successful: {test_stock.symbol} - ${test_stock.currentPrice}")
-            except Exception as test_error:
-                print(f"❌ Test failed: {test_error}")
-                return []
+            # 단순화: 하나씩 순차적으로 처리
+            top_stocks = []
+            for i, ticker in enumerate(top_tickers):
+                try:
+                    print(f"📊 Processing {i+1}/{len(top_tickers)}: {ticker}")
+                    
+                    # 각 요청 사이에 충분한 지연
+                    if i > 0:
+                        print(f"⏳ Waiting 5 seconds between requests...")
+                        await asyncio.sleep(5.0)
+                    
+                    stock_info = await self.get_stock_info(ticker)
+                    if stock_info and stock_info.marketCap > 0:
+                        stock_data = {
+                            "symbol": stock_info.symbol,
+                            "name": stock_info.name,
+                            "price": stock_info.currentPrice,
+                            "change": stock_info.change,
+                            "changePercent": stock_info.changePercent,
+                            "marketCap": stock_info.marketCap,
+                            "volume": stock_info.volume
+                        }
+                        top_stocks.append(stock_data)
+                        print(f"✅ {stock_info.symbol}: ${stock_info.currentPrice:.2f} (시총: ${stock_info.marketCap/1e9:.1f}B)")
+                    else:
+                        print(f"⚠️ {ticker}: 데이터 없음 또는 시가총액 0")
+                        
+                except Exception as e:
+                    print(f"❌ Error fetching {ticker}: {e}")
+                    continue
             
-            # 배치로 주식 정보 가져오기 (동시 처리)
-            stock_infos = await self.get_stock_info_batch(top_tickers)
+            # 시가총액 순으로 정렬
+            top_stocks.sort(key=lambda x: x.get("marketCap", 0), reverse=True)
+            
+            print(f"🎉 Successfully fetched {len(top_stocks)} stocks")
+            
+            # 캐시에 저장
+            self._set_cache(self._get_cache_key('TOP_MARKET_CAP'), top_stocks)
+            
+            return top_stocks[:10]  # 상위 10개만 반환
             
             # 결과 변환
             top_stocks = []
