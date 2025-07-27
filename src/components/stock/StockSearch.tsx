@@ -23,17 +23,22 @@ const StockSearch: React.FC<StockSearchProps> = ({
   // 검색 로직
   const handleSearch = useCallback(
     async (searchQuery: string) => {
+      console.log(`🔍 StockSearch: handleSearch called with '${searchQuery}'`);
+      
       if (searchQuery.length < 2) {
+        console.log(`⚠️ StockSearch: Query too short (${searchQuery.length} chars)`);
         setSuggestions([]);
         return;
       }
       
       setIsLoading(true);
       try {
+        console.log(`🔄 StockSearch: Calling stockService.searchStocks('${searchQuery}')`);
         const results = await stockService.searchStocks(searchQuery);
-        setSuggestions(results);
+        console.log(`✅ StockSearch: Received ${results?.length || 0} results:`, results);
+        setSuggestions(results || []);
       } catch (error) {
-        console.error("Search error:", error);
+        console.error("❌ StockSearch: Search error:", error);
         setSuggestions([]);
       } finally {
         setIsLoading(false);

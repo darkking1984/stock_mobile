@@ -65,7 +65,7 @@ const StockInfo: React.FC<StockInfoProps> = ({ symbol, className }) => {
         </div>
         <div>
           <div className="font-semibold">PER</div>
-          <div>{data.pe ?? '-'}</div>
+          <div>{data.peRatio ?? '-'}</div>
         </div>
         <div>
           <div className="font-semibold">배당수익률</div>

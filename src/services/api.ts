@@ -29,7 +29,7 @@ console.log('========================');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000, // 30초로 증가
+  timeout: 60000, // 30초 → 60초로 증가
   headers: {
     'Content-Type': 'application/json',
   },

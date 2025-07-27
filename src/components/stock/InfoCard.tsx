@@ -61,7 +61,7 @@ const InfoCard: React.FC<InfoCardProps> = ({ stock, className }) => {
           
           <div>
             <div className="text-sm font-medium text-gray-500">PER</div>
-            <div className="text-sm text-gray-900">{formatValue(stock.pe)}</div>
+            <div className="text-sm text-gray-900">{formatValue(stock.peRatio)}</div>
           </div>
           
           <div>

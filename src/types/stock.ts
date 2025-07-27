@@ -5,20 +5,20 @@ export interface StockInfo {
   previousClose: number;
   change: number;
   changePercent: number;
-  high: number;
-  low: number;
-  volume: number;
-  marketCap: number;
-  pe: number;
-  dividendYield: number;
-  beta: number;
-  fiftyTwoWeekHigh: number;
-  fiftyTwoWeekLow: number;
-  avgVolume: number;
+  high?: number;
+  low?: number;
+  volume?: number;
+  marketCap?: number;
+  peRatio?: number;
+  dividendYield?: number;
+  beta?: number;
+  fiftyTwoWeekHigh?: number;
+  fiftyTwoWeekLow?: number;
+  avgVolume?: number;
   currency: string;
-  exchange: string;
-  sector: string;
-  industry: string;
+  exchange?: string;
+  sector?: string;
+  industry?: string;
 }
 
 export interface ChartData {

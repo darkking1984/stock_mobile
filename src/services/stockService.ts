@@ -5,10 +5,13 @@ export const stockService = {
   // 주식 정보 조회
   async getStockInfo(symbol: string): Promise<any> {
     try {
+      console.log(`🔄 Fetching stock info for ${symbol}...`);
       const response = await api.get(`/api/v1/stocks/${symbol}/info`);
+      console.log(`✅ Stock info response for ${symbol}:`, response.data);
+      console.log(`📊 Stock info data:`, response.data.data);
       return response.data;
     } catch (error) {
-      console.error('Error fetching stock info:', error);
+      console.error(`❌ Error fetching stock info for ${symbol}:`, error);
       throw error;
     }
   },
@@ -99,12 +102,22 @@ export const stockService = {
   // 주식 검색
   async searchStocks(query: string): Promise<any> { // Changed from StockSuggestion to any[]
     try {
+      console.log(`🔍 Frontend: Searching for '${query}'`);
       const response = await api.get(`/api/v1/stocks/search`, {
         params: { query }
       });
-      return response.data;
+      console.log(`✅ Frontend: Search response:`, response.data);
+      
+      // API 응답 구조에 맞게 data 필드 추출
+      if (response.data && response.data.success && response.data.data) {
+        console.log(`📊 Frontend: Found ${response.data.data.suggestions?.length || 0} suggestions`);
+        return response.data.data.suggestions || [];
+      } else {
+        console.log(`⚠️ Frontend: Invalid response structure:`, response.data);
+        return [];
+      }
     } catch (error) {
-      console.error('Error searching stocks:', error);
+      console.error('❌ Frontend: Error searching stocks:', error);
       throw error;
     }
   },
@@ -120,12 +133,16 @@ export const stockService = {
     }
   },
 
-  getTopMarketCapStocks: async (): Promise<any> => {
+  // 시가총액 상위 주식 조회
+  async getTopMarketCapStocks(): Promise<any> {
     try {
-      const response = await api.get('/api/v1/stocks/top-market-cap');
+      const apiUrl = '/api/v1/stocks/top-market-cap';
+      console.log('🔄 Fetching top market cap stocks from:', apiUrl);
+      const response = await api.get(apiUrl);
+      console.log('✅ Top market cap stocks response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Error fetching top market cap stocks:', error);
+      console.error('❌ Error fetching top market cap stocks:', error);
       throw error;
     }
   },
