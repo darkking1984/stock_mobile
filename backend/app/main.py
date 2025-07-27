@@ -27,12 +27,22 @@ def create_test_user():
             db.add(test_user)
             db.commit()
             print("✅ 테스트 사용자 생성 완료: coase / password123")
+            print(f"✅ 사용자 ID: {test_user.id}")
         else:
             print("✅ 기존 사용자 존재: coase")
+            print(f"✅ 사용자 ID: {existing_user.id}")
+            
+        # 모든 사용자 목록 출력
+        all_users = db.query(user.User).all()
+        print(f"✅ 총 사용자 수: {len(all_users)}")
+        for u in all_users:
+            print(f"   - {u.username} ({u.email})")
             
         db.close()
     except Exception as e:
         print(f"⚠️ 사용자 생성 중 오류: {e}")
+        import traceback
+        traceback.print_exc()
 
 # 애플리케이션 시작 시 테스트 사용자 생성
 create_test_user()
