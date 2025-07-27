@@ -159,7 +159,7 @@ class StockService:
             return text
     
     async def get_stock_info(self, symbol: str) -> Optional[StockInfo]:
-        """Get detailed stock information for a single symbol"""
+        """Get detailed stock information for a single symbol (Mock Data)"""
         print(f"🔄 Fetching stock info for {symbol}")
         
         # 캐시 확인
@@ -169,170 +169,310 @@ class StockService:
             print(f"✅ Using cached data for {symbol}")
             return cached_data
         
-        # Rate limiting: 더 긴 대기 시간 적용
-        await asyncio.sleep(3.0)  # 2.0s → 3.0s로 증가
+        # Mock 데이터 정의
+        mock_stock_data = {
+            "AAPL": {
+                "name": "Apple Inc.",
+                "currentPrice": 213.88,
+                "previousClose": 213.76,
+                "change": 0.12,
+                "changePercent": 0.06,
+                "high": 215.50,
+                "low": 212.30,
+                "volume": 45000000,
+                "marketCap": 3200000000000,  # 3.2T
+                "peRatio": 28.5,
+                "dividendYield": 0.5,
+                "beta": 1.2,
+                "fiftyTwoWeekHigh": 230.50,
+                "fiftyTwoWeekLow": 150.20,
+                "avgVolume": 52000000,
+                "exchange": "NASDAQ",
+                "sector": "Technology",
+                "industry": "Consumer Electronics"
+            },
+            "MSFT": {
+                "name": "Microsoft Corporation",
+                "currentPrice": 513.71,
+                "previousClose": 510.88,
+                "change": 2.83,
+                "changePercent": 0.55,
+                "high": 515.20,
+                "low": 509.50,
+                "volume": 22000000,
+                "marketCap": 3800000000000,  # 3.8T
+                "peRatio": 35.2,
+                "dividendYield": 0.8,
+                "beta": 1.1,
+                "fiftyTwoWeekHigh": 520.00,
+                "fiftyTwoWeekLow": 320.50,
+                "avgVolume": 25000000,
+                "exchange": "NASDAQ",
+                "sector": "Technology",
+                "industry": "Software"
+            },
+            "GOOGL": {
+                "name": "Alphabet Inc.",
+                "currentPrice": 193.18,
+                "previousClose": 192.17,
+                "change": 1.01,
+                "changePercent": 0.53,
+                "high": 194.50,
+                "low": 191.80,
+                "volume": 28000000,
+                "marketCap": 2300000000000,  # 2.3T
+                "peRatio": 25.8,
+                "dividendYield": 0.0,
+                "beta": 1.0,
+                "fiftyTwoWeekHigh": 200.00,
+                "fiftyTwoWeekLow": 120.50,
+                "avgVolume": 30000000,
+                "exchange": "NASDAQ",
+                "sector": "Technology",
+                "industry": "Internet Content"
+            },
+            "AMZN": {
+                "name": "Amazon.com Inc.",
+                "currentPrice": 231.44,
+                "previousClose": 232.23,
+                "change": -0.79,
+                "changePercent": -0.34,
+                "high": 233.50,
+                "low": 230.20,
+                "volume": 35000000,
+                "marketCap": 2500000000000,  # 2.5T
+                "peRatio": 45.2,
+                "dividendYield": 0.0,
+                "beta": 1.3,
+                "fiftyTwoWeekHigh": 240.00,
+                "fiftyTwoWeekLow": 150.50,
+                "avgVolume": 40000000,
+                "exchange": "NASDAQ",
+                "sector": "Consumer Cyclical",
+                "industry": "Internet Retail"
+            },
+            "NVDA": {
+                "name": "NVIDIA Corporation",
+                "currentPrice": 173.50,
+                "previousClose": 173.74,
+                "change": -0.24,
+                "changePercent": -0.14,
+                "high": 175.20,
+                "low": 172.80,
+                "volume": 55000000,
+                "marketCap": 4200000000000,  # 4.2T
+                "peRatio": 75.5,
+                "dividendYield": 0.1,
+                "beta": 1.8,
+                "fiftyTwoWeekHigh": 180.00,
+                "fiftyTwoWeekLow": 80.50,
+                "avgVolume": 60000000,
+                "exchange": "NASDAQ",
+                "sector": "Technology",
+                "industry": "Semiconductors"
+            },
+            "META": {
+                "name": "Meta Platforms Inc.",
+                "currentPrice": 712.68,
+                "previousClose": 714.80,
+                "change": -2.12,
+                "changePercent": -0.30,
+                "high": 716.50,
+                "low": 710.20,
+                "volume": 18000000,
+                "marketCap": 1800000000000,  # 1.8T
+                "peRatio": 32.5,
+                "dividendYield": 0.0,
+                "beta": 1.4,
+                "fiftyTwoWeekHigh": 720.00,
+                "fiftyTwoWeekLow": 450.50,
+                "avgVolume": 20000000,
+                "exchange": "NASDAQ",
+                "sector": "Technology",
+                "industry": "Internet Content"
+            },
+            "BRK-B": {
+                "name": "Berkshire Hathaway Inc.",
+                "currentPrice": 415.50,
+                "previousClose": 414.20,
+                "change": 1.30,
+                "changePercent": 0.31,
+                "high": 417.00,
+                "low": 413.50,
+                "volume": 8000000,
+                "marketCap": 900000000000,  # 900B
+                "peRatio": 22.5,
+                "dividendYield": 0.0,
+                "beta": 0.8,
+                "fiftyTwoWeekHigh": 420.00,
+                "fiftyTwoWeekLow": 350.50,
+                "avgVolume": 9000000,
+                "exchange": "NYSE",
+                "sector": "Financial Services",
+                "industry": "Insurance"
+            },
+            "LLY": {
+                "name": "Eli Lilly and Company",
+                "currentPrice": 850.25,
+                "previousClose": 848.50,
+                "change": 1.75,
+                "changePercent": 0.21,
+                "high": 852.00,
+                "low": 847.20,
+                "volume": 5000000,
+                "marketCap": 800000000000,  # 800B
+                "peRatio": 65.2,
+                "dividendYield": 0.7,
+                "beta": 0.6,
+                "fiftyTwoWeekHigh": 860.00,
+                "fiftyTwoWeekLow": 600.50,
+                "avgVolume": 5500000,
+                "exchange": "NYSE",
+                "sector": "Healthcare",
+                "industry": "Drug Manufacturers"
+            },
+            "TSM": {
+                "name": "Taiwan Semiconductor Manufacturing",
+                "currentPrice": 185.30,
+                "previousClose": 184.50,
+                "change": 0.80,
+                "changePercent": 0.43,
+                "high": 186.50,
+                "low": 183.80,
+                "volume": 12000000,
+                "marketCap": 600000000000,  # 600B
+                "peRatio": 28.5,
+                "dividendYield": 1.2,
+                "beta": 1.1,
+                "fiftyTwoWeekHigh": 190.00,
+                "fiftyTwoWeekLow": 120.50,
+                "avgVolume": 13000000,
+                "exchange": "NYSE",
+                "sector": "Technology",
+                "industry": "Semiconductors"
+            },
+            "V": {
+                "name": "Visa Inc.",
+                "currentPrice": 295.50,
+                "previousClose": 294.80,
+                "change": 0.70,
+                "changePercent": 0.24,
+                "high": 296.50,
+                "low": 293.20,
+                "volume": 15000000,
+                "marketCap": 600000000000,  # 600B
+                "peRatio": 30.2,
+                "dividendYield": 0.8,
+                "beta": 0.9,
+                "fiftyTwoWeekHigh": 300.00,
+                "fiftyTwoWeekLow": 200.50,
+                "avgVolume": 16000000,
+                "exchange": "NYSE",
+                "sector": "Financial Services",
+                "industry": "Credit Services"
+            }
+        }
         
-        try:
-            ticker = yf.Ticker(symbol)
-            
-            # 첫 번째 시도: ticker.info 사용
-            try:
-                info = ticker.info
-                print(f" Raw info for {symbol}: {len(info)} fields")
-                
-                # 사용 가능한 필드 로깅
-                print(f"🔍 Available fields for {symbol}:")
-                for key, value in list(info.items())[:10]:  # 처음 10개만 로깅
-                    print(f"   {key}: {value}")
-                
-            except Exception as e:
-                print(f"⚠️ ticker.info failed for {symbol}: {e}")
-                # 대안: ticker.history 사용
-                try:
-                    history = ticker.history(period="1d")
-                    if not history.empty:
-                        latest = history.iloc[-1]
-                        info = {
-                            'longName': symbol,
-                            'currentPrice': float(latest['Close']),
-                            'regularMarketVolume': int(latest['Volume']),
-                            'fullExchangeName': 'NASDAQ',  # 기본값
-                            'sector': 'Unknown',
-                            'industry': 'Unknown',
-                            'currency': 'USD'
-                        }
-                        print(f"✅ Using history fallback for {symbol}")
-                    else:
-                        print(f"❌ No history data for {symbol}")
-                        return None
-                except Exception as history_error:
-                    print(f"❌ History fallback also failed for {symbol}: {history_error}")
-                    return None
+        # Mock 데이터에서 주식 정보 가져오기
+        if symbol in mock_stock_data:
+            mock_data = mock_stock_data[symbol]
             
             # StockInfo 객체 생성
             stock_info = StockInfo(
                 symbol=symbol,
-                name=info.get('longName', symbol),
-                currentPrice=info.get('currentPrice', 0.0),
-                previousClose=info.get('regularMarketPreviousClose', 0.0),
-                change=info.get('regularMarketChange', 0.0),
-                changePercent=info.get('regularMarketChangePercent', 0.0),
-                high=info.get('regularMarketDayHigh'),
-                low=info.get('regularMarketDayLow'),
-                volume=info.get('regularMarketVolume'),
-                marketCap=info.get('marketCap'),
-                peRatio=info.get('trailingPE'),
-                dividendYield=info.get('trailingAnnualDividendYield'),
-                beta=info.get('beta'),
-                fiftyTwoWeekHigh=info.get('fiftyTwoWeekHigh'),
-                fiftyTwoWeekLow=info.get('fiftyTwoWeekLow'),
-                avgVolume=info.get('averageDailyVolume3Month'),
-                currency=info.get('currency', 'USD'),
-                exchange=info.get('fullExchangeName', 'NASDAQ'),
-                sector=info.get('sector'),
-                industry=info.get('industry')
+                name=mock_data["name"],
+                currentPrice=mock_data["currentPrice"],
+                previousClose=mock_data["previousClose"],
+                change=mock_data["change"],
+                changePercent=mock_data["changePercent"],
+                high=mock_data["high"],
+                low=mock_data["low"],
+                volume=mock_data["volume"],
+                marketCap=mock_data["marketCap"],
+                peRatio=mock_data["peRatio"],
+                dividendYield=mock_data["dividendYield"],
+                beta=mock_data["beta"],
+                fiftyTwoWeekHigh=mock_data["fiftyTwoWeekHigh"],
+                fiftyTwoWeekLow=mock_data["fiftyTwoWeekLow"],
+                avgVolume=mock_data["avgVolume"],
+                currency="USD",
+                exchange=mock_data["exchange"],
+                sector=mock_data["sector"],
+                industry=mock_data["industry"]
             )
             
-            print(f" Stock Info Details for {symbol}:")
+            print(f"✅ Mock data for {symbol}:")
             print(f"   Name: {stock_info.name}")
             print(f"   Price: ${stock_info.currentPrice}")
-            print(f"   High: ${stock_info.high}")
-            print(f"   Low: ${stock_info.low}")
-            print(f"   Volume: {stock_info.volume}")
-            print(f"   Market Cap: ${stock_info.marketCap}")
-            print(f"   Exchange: {stock_info.exchange}")
-            print(f"   Sector: {stock_info.sector}")
+            print(f"   Change: ${stock_info.change} ({stock_info.changePercent}%)")
+            print(f"   Market Cap: ${stock_info.marketCap/1e9:.1f}B")
             
-            # 캐시에 저장 (5분 → 10분으로 증가)
+            # 캐시에 저장 (10분)
             self._set_cache(cache_key, stock_info, 600)
             
             return stock_info
-            
-        except HTTPError as e:
-            if e.response.status_code == 429:
-                print(f"⚠️ Rate limit hit for {symbol}, waiting 15 seconds...")
-                await asyncio.sleep(15.0)  # 10s → 15s로 증가
-                
-                # 재시도
-                try:
-                    await asyncio.sleep(8.0)  # 추가 대기 시간 증가
-                    ticker = yf.Ticker(symbol)
-                    info = ticker.info
-                    
-                    stock_info = StockInfo(
-                        symbol=symbol,
-                        name=info.get('longName', symbol),
-                        currentPrice=info.get('currentPrice', 0.0),
-                        previousClose=info.get('regularMarketPreviousClose', 0.0),
-                        change=info.get('regularMarketChange', 0.0),
-                        changePercent=info.get('regularMarketChangePercent', 0.0),
-                        high=info.get('regularMarketDayHigh'),
-                        low=info.get('regularMarketDayLow'),
-                        volume=info.get('regularMarketVolume'),
-                        marketCap=info.get('marketCap'),
-                        peRatio=info.get('trailingPE'),
-                        dividendYield=info.get('trailingAnnualDividendYield'),
-                        beta=info.get('beta'),
-                        fiftyTwoWeekHigh=info.get('fiftyTwoWeekHigh'),
-                        fiftyTwoWeekLow=info.get('fiftyTwoWeekLow'),
-                        avgVolume=info.get('averageDailyVolume3Month'),
-                        currency=info.get('currency', 'USD'),
-                        exchange=info.get('fullExchangeName', 'NASDAQ'),
-                        sector=info.get('sector'),
-                        industry=info.get('industry')
-                    )
-                    
-                    self._set_cache(cache_key, stock_info, 600)
-                    return stock_info
-                    
-                except Exception as retry_error:
-                    print(f"❌ Retry failed for {symbol}: {retry_error}")
-                    return None
-            else:
-                print(f"❌ HTTP error for {symbol}: {e}")
-                return None
-        except Exception as e:
-            print(f"❌ Error fetching {symbol}: {e}")
+        else:
+            print(f"❌ Mock data not available for {symbol}")
             return None
     
     async def get_stock_chart(self, symbol: str, period: str = "1y", interval: str = "1d") -> dict:
-        """주식 차트 데이터 조회"""
+        """주식 차트 데이터 조회 (Mock Data)"""
         try:
-            print(f"Fetching chart data for {symbol}, period: {period}, interval: {interval}")
-            ticker = yf.Ticker(symbol)
-            hist = ticker.history(period=period, interval=interval)
+            print(f"🔄 Fetching chart data for {symbol} (Mock Data)")
             
-            print(f"Raw history data shape: {hist.shape}")
-            print(f"Raw history data columns: {hist.columns.tolist()}")
-            print(f"First few rows: {hist.head()}")
+            # Mock 차트 데이터 생성 (1년치 일별 데이터)
+            import random
+            from datetime import datetime, timedelta
             
+            # 기본 가격 설정 (주식별로 다른 기본 가격)
+            base_prices = {
+                "AAPL": 200.0,
+                "MSFT": 500.0,
+                "GOOGL": 190.0,
+                "AMZN": 230.0,
+                "NVDA": 170.0,
+                "META": 710.0,
+                "BRK-B": 410.0,
+                "LLY": 850.0,
+                "TSM": 185.0,
+                "V": 295.0
+            }
+            
+            base_price = base_prices.get(symbol, 100.0)
+            
+            # 1년치 일별 데이터 생성 (365일)
             data = []
-            for index, row in hist.iterrows():
-                try:
-                    # JSON 직렬화 문제 해결을 위해 모든 값을 기본 타입으로 변환
-                    chart_point = {
-                        "timestamp": index.isoformat(),
-                        "open": float(row["Open"]),
-                        "high": float(row["High"]),
-                        "low": float(row["Low"]),
-                        "close": float(row["Close"]),
-                        "volume": int(row["Volume"])
-                    }
-                    data.append(chart_point)
-                    print(f"Created chart point: {chart_point}")
-                except Exception as e:
-                    print(f"Error processing row {index}: {e}")
-                    print(f"Row data: {row}")
-                    continue
+            current_date = datetime.now() - timedelta(days=365)
             
-            print(f"Processed {len(data)} chart data points")
-            if data:
-                print(f"First data point: {data[0]}")
-                print(f"Last data point: {data[-1]}")
-                print(f"Sample data point keys: {list(data[0].keys())}")
-                print(f"Sample data point values: {list(data[0].values())}")
+            for i in range(365):
+                # 가격 변동 시뮬레이션 (랜덤 워크)
+                price_change = random.uniform(-0.02, 0.02)  # -2% ~ +2%
+                base_price *= (1 + price_change)
+                
+                # OHLC 데이터 생성
+                daily_volatility = random.uniform(0.005, 0.015)  # 0.5% ~ 1.5%
+                open_price = base_price
+                high_price = base_price * (1 + random.uniform(0, daily_volatility))
+                low_price = base_price * (1 - random.uniform(0, daily_volatility))
+                close_price = base_price * (1 + random.uniform(-daily_volatility/2, daily_volatility/2))
+                
+                # 거래량 생성
+                volume = random.randint(1000000, 100000000)
+                
+                chart_point = {
+                    "timestamp": current_date.isoformat(),
+                    "open": round(open_price, 2),
+                    "high": round(high_price, 2),
+                    "low": round(low_price, 2),
+                    "close": round(close_price, 2),
+                    "volume": volume
+                }
+                data.append(chart_point)
+                
+                current_date += timedelta(days=1)
             
-            # ChartData 모델 대신 직접 딕셔너리 반환
+            print(f"✅ Mock chart data: Generated {len(data)} data points for {symbol}")
+            
             result = {
                 "symbol": symbol,
                 "period": period,
@@ -340,83 +480,54 @@ class StockService:
                 "data": data
             }
             
-            print(f"Returning result with {len(result['data'])} points")
-            print(f"Result type: {type(result)}")
-            print(f"Result data type: {type(result['data'])}")
-            if result['data']:
-                print(f"First result data point: {result['data'][0]}")
-                print(f"First result data point type: {type(result['data'][0])}")
-            
             return result
             
         except Exception as e:
-            print(f"Error in get_stock_chart: {e}")
+            print(f"❌ Error in get_stock_chart: {e}")
             raise ValueError(f"Failed to fetch chart data for {symbol}: {str(e)}")
     
     async def search_stocks(self, query: str, limit: int = 10) -> List[StockSuggestion]:
-        """주식 검색 - 한글 검색 지원"""
+        """주식 검색 - Mock Data"""
         try:
-            print(f"🔍 Searching for: '{query}'")
+            print(f"🔍 Searching for: '{query}' (Mock Data)")
             
-            # 한글 검색어를 영어로 변환
-            english_query = self._translate_korean_to_english(query)
-            print(f"🔄 Translated to: '{english_query}'")
+            # Mock 검색 데이터
+            mock_stocks = [
+                StockSuggestion(symbol="AAPL", name="Apple Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="MSFT", name="Microsoft Corporation", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="GOOGL", name="Alphabet Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="AMZN", name="Amazon.com Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="NVDA", name="NVIDIA Corporation", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="META", name="Meta Platforms Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="BRK-B", name="Berkshire Hathaway Inc.", exchange="NYSE", type="Common Stock", country="US"),
+                StockSuggestion(symbol="LLY", name="Eli Lilly and Company", exchange="NYSE", type="Common Stock", country="US"),
+                StockSuggestion(symbol="TSM", name="Taiwan Semiconductor Manufacturing", exchange="NYSE", type="Common Stock", country="TW"),
+                StockSuggestion(symbol="V", name="Visa Inc.", exchange="NYSE", type="Common Stock", country="US"),
+                StockSuggestion(symbol="PLTR", name="Palantir Technologies Inc.", exchange="NYSE", type="Common Stock", country="US"),
+                StockSuggestion(symbol="TSLA", name="Tesla Inc.", exchange="NASDAQ", type="Common Stock", country="US"),
+                StockSuggestion(symbol="JPM", name="JPMorgan Chase & Co.", exchange="NYSE", type="Common Stock", country="US"),
+                StockSuggestion(symbol="JNJ", name="Johnson & Johnson", exchange="NYSE", type="Common Stock", country="US"),
+                StockSuggestion(symbol="PG", name="Procter & Gamble Co.", exchange="NYSE", type="Common Stock", country="US")
+            ]
             
-            # 먼저 인기 주식에서 검색 (빠른 응답)
-            popular_suggestions = await self._search_popular_stocks(query, limit)
-            print(f"📊 Found {len(popular_suggestions)} popular matches")
+            # 검색어와 매칭 (대소문자 무시)
+            query_lower = query.lower()
+            matched_stocks = []
             
-            # 인기 주식에서 충분한 결과를 찾았으면 반환
-            if len(popular_suggestions) >= limit:
-                return popular_suggestions[:limit]
+            for stock in mock_stocks:
+                # 심볼, 이름, 한글 번역명으로 검색
+                if (query_lower in stock.symbol.lower() or 
+                    query_lower in stock.name.lower() or
+                    query_lower in self._translate_to_korean(stock.name).lower()):
+                    matched_stocks.append(stock)
             
-            # Yahoo Finance 검색 시도 (추가 결과용)
-            try:
-                # 영어 쿼리로 Yahoo Finance 검색
-                search_results = yf.Tickers(english_query)
-                
-                if search_results.tickers:
-                    print(f"🔍 Yahoo Finance found {len(search_results.tickers)} results")
-                    
-                    suggestions = []
-                    for ticker in search_results.tickers[:limit]:
-                        try:
-                            # 티커 정보 가져오기
-                            ticker_info = ticker.info
-                            
-                            # 기본 정보 추출
-                            symbol = ticker.ticker
-                            name = ticker_info.get("longName", ticker_info.get("shortName", ""))
-                            exchange = ticker_info.get("exchange", "")
-                            
-                            # 유효한 주식인지 확인 (가격 정보가 있는지)
-                            if ticker_info.get("currentPrice") or ticker_info.get("regularMarketPrice"):
-                                suggestions.append(StockSuggestion(
-                                    symbol=symbol,
-                                    name=name,
-                                    exchange=exchange,
-                                    type="Common Stock",
-                                    country="US"
-                                ))
-                        except Exception as e:
-                            print(f"⚠️ Error processing ticker {ticker.ticker}: {e}")
-                            continue
-                    
-                    # 인기 주식 결과와 합치기
-                    existing_symbols = {s.symbol for s in popular_suggestions}
-                    for suggestion in suggestions:
-                        if suggestion.symbol not in existing_symbols:
-                            popular_suggestions.append(suggestion)
-                            if len(popular_suggestions) >= limit:
-                                break
-                else:
-                    print("⚠️ No Yahoo Finance results found")
-                    
-            except Exception as e:
-                print(f"⚠️ Yahoo Finance search failed: {e}")
+            # 검색 결과가 없으면 인기 주식들 반환
+            if not matched_stocks:
+                print(f"⚠️ No exact matches found, returning popular stocks")
+                matched_stocks = mock_stocks[:limit]
             
-            print(f"✅ Total search results: {len(popular_suggestions)}")
-            return popular_suggestions[:limit]
+            print(f"✅ Mock search: Found {len(matched_stocks)} matches")
+            return matched_stocks[:limit]
             
         except Exception as e:
             print(f"❌ Search failed: {e}")
@@ -467,21 +578,86 @@ class StockService:
             raise ValueError(f"Failed to search popular stocks: {str(e)}")
     
     async def get_popular_stocks(self) -> List[StockInfo]:
-        """인기 주식 목록 조회"""
+        """인기 주식 목록 조회 (Mock Data)"""
         try:
-            popular_symbols = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META"]
-            popular_stocks = []
+            print(f"🔄 Fetching popular stocks (Mock Data)")
             
-            for symbol in popular_symbols:
-                try:
-                    stock_info = await self.get_stock_info(symbol)
-                    popular_stocks.append(stock_info)
-                except:
-                    continue
+            # Mock 인기 주식 데이터
+            mock_popular_stocks = [
+                StockInfo(
+                    symbol="AAPL",
+                    name="Apple Inc.",
+                    currentPrice=213.88,
+                    previousClose=213.76,
+                    change=0.12,
+                    changePercent=0.06,
+                    high=215.50,
+                    low=212.30,
+                    volume=45000000,
+                    marketCap=3200000000000,
+                    peRatio=28.5,
+                    dividendYield=0.5,
+                    beta=1.2,
+                    fiftyTwoWeekHigh=230.50,
+                    fiftyTwoWeekLow=150.20,
+                    avgVolume=52000000,
+                    currency="USD",
+                    exchange="NASDAQ",
+                    sector="Technology",
+                    industry="Consumer Electronics"
+                ),
+                StockInfo(
+                    symbol="MSFT",
+                    name="Microsoft Corporation",
+                    currentPrice=513.71,
+                    previousClose=510.88,
+                    change=2.83,
+                    changePercent=0.55,
+                    high=515.20,
+                    low=509.50,
+                    volume=22000000,
+                    marketCap=3800000000000,
+                    peRatio=35.2,
+                    dividendYield=0.8,
+                    beta=1.1,
+                    fiftyTwoWeekHigh=520.00,
+                    fiftyTwoWeekLow=320.50,
+                    avgVolume=25000000,
+                    currency="USD",
+                    exchange="NASDAQ",
+                    sector="Technology",
+                    industry="Software"
+                ),
+                StockInfo(
+                    symbol="GOOGL",
+                    name="Alphabet Inc.",
+                    currentPrice=193.18,
+                    previousClose=192.17,
+                    change=1.01,
+                    changePercent=0.53,
+                    high=194.50,
+                    low=191.80,
+                    volume=28000000,
+                    marketCap=2300000000000,
+                    peRatio=25.8,
+                    dividendYield=0.0,
+                    beta=1.0,
+                    fiftyTwoWeekHigh=200.00,
+                    fiftyTwoWeekLow=120.50,
+                    avgVolume=30000000,
+                    currency="USD",
+                    exchange="NASDAQ",
+                    sector="Technology",
+                    industry="Internet Content"
+                )
+            ]
             
-            return popular_stocks
+            print(f"✅ Mock popular stocks: Returned {len(mock_popular_stocks)} stocks")
+            return mock_popular_stocks
+            
         except Exception as e:
-            raise ValueError(f"Failed to fetch popular stocks: {str(e)}")
+            print(f"❌ Error in get_popular_stocks: {e}")
+            return []
 
     async def get_financial_data(self, symbol: str) -> FinancialData:
         """주식 재무정보 조회 (MVP: 최근 연간 데이터 1건만)"""
@@ -543,55 +719,117 @@ class StockService:
             raise ValueError(f"Failed to compare stocks: {str(e)}") 
 
     async def get_company_description(self, symbol: str) -> dict:
-        """회사 상세설명 조회"""
+        """회사 상세설명 조회 (Mock Data)"""
         try:
-            ticker = yf.Ticker(symbol)
-            info = ticker.info
+            print(f"🔄 Fetching company description for {symbol} (Mock Data)")
             
-            # 회사 설명을 한글로 번역
-            original_description = info.get("longBusinessSummary", "")
-            korean_description = self._translate_to_korean(original_description)
-            
-            # 회사 기본 정보
-            company_info = {
-                "symbol": symbol,
-                "name": info.get("longName", ""),
-                "shortName": info.get("shortName", ""),
-                "sector": info.get("sector", ""),
-                "industry": info.get("industry", ""),
-                "country": info.get("country", ""),
-                "website": info.get("website", ""),
-                "description": korean_description,  # 한글로 번역된 설명
-                "originalDescription": original_description,  # 원본 영어 설명도 포함
-                "employees": info.get("fullTimeEmployees", 0),
-                "founded": info.get("founded", ""),
-                "ceo": info.get("companyOfficers", [{}])[0].get("name", "") if info.get("companyOfficers") else "",
-                "headquarters": info.get("city", "") + ", " + info.get("state", "") + ", " + info.get("country", ""),
-                "marketCap": info.get("marketCap", 0),
-                "enterpriseValue": info.get("enterpriseValue", 0),
-                "revenue": info.get("totalRevenue", 0),
-                "profitMargin": info.get("profitMargins", 0),
-                "operatingMargin": info.get("operatingMargins", 0),
-                "returnOnEquity": info.get("returnOnEquity", 0),
-                "returnOnAssets": info.get("returnOnAssets", 0),
-                "debtToEquity": info.get("debtToEquity", 0),
-                "currentRatio": info.get("currentRatio", 0),
-                "quickRatio": info.get("quickRatio", 0),
-                "cashPerShare": info.get("totalCashPerShare", 0),
-                "bookValue": info.get("bookValue", 0),
-                "priceToBook": info.get("priceToBook", 0),
-                "priceToSales": info.get("priceToSalesTrailing12Months", 0),
-                "enterpriseToRevenue": info.get("enterpriseToRevenue", 0),
-                "enterpriseToEbitda": info.get("enterpriseToEbitda", 0),
+            # Mock 회사 설명 데이터
+            mock_descriptions = {
+                "AAPL": {
+                    "name": "Apple Inc.",
+                    "shortName": "Apple",
+                    "sector": "Technology",
+                    "industry": "Consumer Electronics",
+                    "country": "United States",
+                    "website": "https://www.apple.com",
+                    "description": "애플은 혁신적인 기술 제품과 서비스를 제공하는 글로벌 기업입니다. iPhone, iPad, Mac, Apple Watch, AirPods 등의 하드웨어 제품과 iOS, macOS, watchOS 등의 소프트웨어 플랫폼을 개발하고 있습니다. 또한 Apple Music, iCloud, Apple TV+ 등의 디지털 서비스도 제공합니다.",
+                    "originalDescription": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables and accessories, and sells a variety of related services.",
+                    "employees": 164000,
+                    "founded": "1976",
+                    "ceo": "Tim Cook",
+                    "headquarters": "Cupertino, California, United States",
+                    "marketCap": 3200000000000,
+                    "enterpriseValue": 3100000000000,
+                    "revenue": 394328000000,
+                    "profitMargin": 0.25,
+                    "operatingMargin": 0.30,
+                    "returnOnEquity": 1.47,
+                    "returnOnAssets": 0.18,
+                    "debtToEquity": 0.15
+                },
+                "MSFT": {
+                    "name": "Microsoft Corporation",
+                    "shortName": "Microsoft",
+                    "sector": "Technology",
+                    "industry": "Software",
+                    "country": "United States",
+                    "website": "https://www.microsoft.com",
+                    "description": "마이크로소프트는 개인용 컴퓨터, 서버, 전화기, 지능형 장치용 소프트웨어, 서비스, 디바이스 및 솔루션을 개발, 제조, 라이선스, 지원 및 판매하는 글로벌 기술 기업입니다. Windows, Office, Azure, Xbox 등의 제품으로 유명합니다.",
+                    "originalDescription": "Microsoft Corporation develops, licenses, and supports software, services, devices, and solutions worldwide.",
+                    "employees": 221000,
+                    "founded": "1975",
+                    "ceo": "Satya Nadella",
+                    "headquarters": "Redmond, Washington, United States",
+                    "marketCap": 3800000000000,
+                    "enterpriseValue": 3700000000000,
+                    "revenue": 211915000000,
+                    "profitMargin": 0.33,
+                    "operatingMargin": 0.41,
+                    "returnOnEquity": 0.39,
+                    "returnOnAssets": 0.18,
+                    "debtToEquity": 0.35
+                },
+                "GOOGL": {
+                    "name": "Alphabet Inc.",
+                    "shortName": "Alphabet",
+                    "sector": "Technology",
+                    "industry": "Internet Content",
+                    "country": "United States",
+                    "website": "https://www.alphabet.com",
+                    "description": "알파벳은 Google 검색 엔진, YouTube, Android 운영체제, Chrome 브라우저 등의 인터넷 서비스를 제공하는 기술 기업입니다. 또한 Waymo 자율주행차, Google Cloud, Google Maps 등의 혁신적인 기술도 개발하고 있습니다.",
+                    "originalDescription": "Alphabet Inc. provides online advertising services in the United States, Europe, the Middle East, Africa, the Asia-Pacific, Canada, and Latin America.",
+                    "employees": 156500,
+                    "founded": "2015",
+                    "ceo": "Sundar Pichai",
+                    "headquarters": "Mountain View, California, United States",
+                    "marketCap": 2300000000000,
+                    "enterpriseValue": 2200000000000,
+                    "revenue": 307394000000,
+                    "profitMargin": 0.21,
+                    "operatingMargin": 0.26,
+                    "returnOnEquity": 0.23,
+                    "returnOnAssets": 0.18,
+                    "debtToEquity": 0.05
+                }
             }
             
+            # 기본 Mock 데이터 (알 수 없는 주식용)
+            default_description = {
+                "name": f"{symbol} Corporation",
+                "shortName": symbol,
+                "sector": "Technology",
+                "industry": "Software",
+                "country": "United States",
+                "website": f"https://www.{symbol.lower()}.com",
+                "description": f"{symbol}는 혁신적인 기술 솔루션을 제공하는 글로벌 기업입니다.",
+                "originalDescription": f"{symbol} is a global technology company providing innovative solutions.",
+                "employees": 10000,
+                "founded": "2000",
+                "ceo": "CEO",
+                "headquarters": "United States",
+                "marketCap": 100000000000,
+                "enterpriseValue": 95000000000,
+                "revenue": 10000000000,
+                "profitMargin": 0.15,
+                "operatingMargin": 0.20,
+                "returnOnEquity": 0.25,
+                "returnOnAssets": 0.10,
+                "debtToEquity": 0.30
+            }
+            
+            # Mock 데이터에서 회사 정보 가져오기
+            company_info = mock_descriptions.get(symbol, default_description)
+            company_info["symbol"] = symbol
+            
+            print(f"✅ Mock company description: Returned data for {symbol}")
             return company_info
             
         except Exception as e:
-            raise Exception(f"Failed to get company description for {symbol}: {str(e)}") 
+            print(f"❌ Error in get_company_description: {e}")
+            return {"symbol": symbol, "error": "Failed to fetch company description"} 
 
     async def get_top_market_cap_stocks(self) -> List[Dict[str, Any]]:
-        """시가총액 상위 10개 주식 조회 (단순화된 처리)"""
+        """시가총액 상위 10개 주식 조회 (Mock Data)"""
         try:
             # 캐시된 데이터 사용
             cached_data = self._get_cache(self._get_cache_key('TOP_MARKET_CAP'))
@@ -599,89 +837,113 @@ class StockService:
                 print(f"✅ Returning cached top market cap stocks")
                 return cached_data
 
-            # 주요 대형주 티커 리스트 (시가총액 순)
-            top_tickers = [
-                "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", 
-                "META", "BRK-B", "LLY", "TSM", "V"
+            print(f"🔄 Fetching top market cap stocks (Mock Data)")
+
+            # Mock 데이터로 시가총액 상위 10개 주식
+            top_stocks = [
+                {
+                    "symbol": "NVDA",
+                    "name": "NVIDIA Corporation",
+                    "price": 173.50,
+                    "change": -0.24,
+                    "changePercent": -0.14,
+                    "marketCap": 4200000000000,  # 4.2T
+                    "volume": 55000000
+                },
+                {
+                    "symbol": "MSFT",
+                    "name": "Microsoft Corporation",
+                    "price": 513.71,
+                    "change": 2.83,
+                    "changePercent": 0.55,
+                    "marketCap": 3800000000000,  # 3.8T
+                    "volume": 22000000
+                },
+                {
+                    "symbol": "AAPL",
+                    "name": "Apple Inc.",
+                    "price": 213.88,
+                    "change": 0.12,
+                    "changePercent": 0.06,
+                    "marketCap": 3200000000000,  # 3.2T
+                    "volume": 45000000
+                },
+                {
+                    "symbol": "GOOGL",
+                    "name": "Alphabet Inc.",
+                    "price": 193.18,
+                    "change": 1.01,
+                    "changePercent": 0.53,
+                    "marketCap": 2300000000000,  # 2.3T
+                    "volume": 28000000
+                },
+                {
+                    "symbol": "AMZN",
+                    "name": "Amazon.com Inc.",
+                    "price": 231.44,
+                    "change": -0.79,
+                    "changePercent": -0.34,
+                    "marketCap": 2500000000000,  # 2.5T
+                    "volume": 35000000
+                },
+                {
+                    "symbol": "META",
+                    "name": "Meta Platforms Inc.",
+                    "price": 712.68,
+                    "change": -2.12,
+                    "changePercent": -0.30,
+                    "marketCap": 1800000000000,  # 1.8T
+                    "volume": 18000000
+                },
+                {
+                    "symbol": "BRK-B",
+                    "name": "Berkshire Hathaway Inc.",
+                    "price": 415.50,
+                    "change": 1.30,
+                    "changePercent": 0.31,
+                    "marketCap": 900000000000,  # 900B
+                    "volume": 8000000
+                },
+                {
+                    "symbol": "LLY",
+                    "name": "Eli Lilly and Company",
+                    "price": 850.25,
+                    "change": 1.75,
+                    "changePercent": 0.21,
+                    "marketCap": 800000000000,  # 800B
+                    "volume": 5000000
+                },
+                {
+                    "symbol": "TSM",
+                    "name": "Taiwan Semiconductor Manufacturing",
+                    "price": 185.30,
+                    "change": 0.80,
+                    "changePercent": 0.43,
+                    "marketCap": 600000000000,  # 600B
+                    "volume": 12000000
+                },
+                {
+                    "symbol": "V",
+                    "name": "Visa Inc.",
+                    "price": 295.50,
+                    "change": 0.70,
+                    "changePercent": 0.24,
+                    "marketCap": 600000000000,  # 600B
+                    "volume": 15000000
+                }
             ]
-            
-            print(f"🔄 Fetching top market cap stocks for {len(top_tickers)} tickers")
-            print(f"📊 Tickers: {', '.join(top_tickers)}")
-            
-            # 단순화: 하나씩 순차적으로 처리
-            top_stocks = []
-            for i, ticker in enumerate(top_tickers):
-                try:
-                    print(f"📊 Processing {i+1}/{len(top_tickers)}: {ticker}")
-                    
-                    # 각 요청 사이에 충분한 지연
-                    if i > 0:
-                        print(f"⏳ Waiting 5 seconds between requests...")
-                        await asyncio.sleep(5.0)
-                    
-                    stock_info = await self.get_stock_info(ticker)
-                    if stock_info and stock_info.marketCap > 0:
-                        stock_data = {
-                            "symbol": stock_info.symbol,
-                            "name": stock_info.name,
-                            "price": stock_info.currentPrice,
-                            "change": stock_info.change,
-                            "changePercent": stock_info.changePercent,
-                            "marketCap": stock_info.marketCap,
-                            "volume": stock_info.volume
-                        }
-                        top_stocks.append(stock_data)
-                        print(f"✅ {stock_info.symbol}: ${stock_info.currentPrice:.2f} (시총: ${stock_info.marketCap/1e9:.1f}B)")
-                    else:
-                        print(f"⚠️ {ticker}: 데이터 없음 또는 시가총액 0")
-                        
-                except Exception as e:
-                    print(f"❌ Error fetching {ticker}: {e}")
-                    continue
-            
-            # 시가총액 순으로 정렬
-            top_stocks.sort(key=lambda x: x.get("marketCap", 0), reverse=True)
-            
-            print(f"🎉 Successfully fetched {len(top_stocks)} stocks")
-            
-            # 캐시에 저장
-            self._set_cache(self._get_cache_key('TOP_MARKET_CAP'), top_stocks)
-            
-            return top_stocks[:10]  # 상위 10개만 반환
-            
-            # 결과 변환
-            top_stocks = []
-            for i, stock_info in enumerate(stock_infos):
-                if stock_info and stock_info.marketCap > 0:
-                    stock_data = {
-                        "symbol": stock_info.symbol,
-                        "name": stock_info.name,
-                        "price": stock_info.currentPrice,
-                        "change": stock_info.change,
-                        "changePercent": stock_info.changePercent,
-                        "marketCap": stock_info.marketCap,
-                        "volume": stock_info.volume
-                    }
-                    top_stocks.append(stock_data)
-                    print(f"✅ {stock_info.symbol}: ${stock_info.currentPrice:.2f} (시총: ${stock_info.marketCap/1e9:.1f}B)")
-                else:
-                    print(f"⚠️ {top_tickers[i]}: 데이터 없음 또는 시가총액 0")
-            
-            # 시가총액 순으로 정렬
-            top_stocks.sort(key=lambda x: x.get("marketCap", 0), reverse=True)
-            
-            print(f"🎉 Successfully fetched {len(top_stocks)} stocks")
-            
-            # 캐시에 저장
-            self._set_cache(self._get_cache_key('TOP_MARKET_CAP'), top_stocks)
-            
-            return top_stocks[:10]  # 상위 10개만 반환
-            
+
+            print(f"✅ Mock data: Successfully fetched {len(top_stocks)} stocks")
+            for stock in top_stocks:
+                print(f"   {stock['symbol']}: ${stock['price']:.2f} (시총: ${stock['marketCap']/1e9:.1f}B)")
+
+            # 캐시에 저장 (10분)
+            self._set_cache(self._get_cache_key('TOP_MARKET_CAP'), top_stocks, 600)
+
+            return top_stocks
+
         except Exception as e:
-            print(f"❌ Failed to get top market cap stocks: {str(e)}")
-            import traceback
-            traceback.print_exc()
-            # 빈 리스트 반환하여 앱이 크래시되지 않도록 함
+            print(f"❌ Error in get_top_market_cap_stocks: {e}")
             return []
 
     async def get_index_stocks(self, index_name: str) -> List[Dict[str, Any]]:
