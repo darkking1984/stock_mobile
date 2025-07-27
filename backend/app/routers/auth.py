@@ -31,21 +31,41 @@ def get_current_user(authorization: Optional[str] = Header(None), db: Session = 
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    token = authorization.replace("Bearer ", "")
-    token_data = verify_token(token)
-    if token_data is None:
+    try:
+        token = authorization.replace("Bearer ", "")
+        token_data = verify_token(token)
+        
+        if token_data is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        # 토큰에서 username 추출
+        username = token_data.get("sub")
+        if not username:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token format",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        auth_service = AuthService()
+        user = auth_service.get_user_by_username(db, username=username)
+        
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="User not found",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        
+        return user
+        
+    except Exception as e:
+        print(f"Error in /auth/me: {e}")
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    auth_service = AuthService()
-    user = auth_service.get_user_by_username(db, username=token_data.username)
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return user 
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error",
+        ) 

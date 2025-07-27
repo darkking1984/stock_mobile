@@ -64,6 +64,7 @@ app.add_middleware(
         "https://stock-mobile-fpkad4kro-boris-projects-ee8b76c6.vercel.app",  # 현재 Vercel URL
         "https://*.vercel.app",  # Vercel 프리뷰 URL
         "https://*.onrender.com",  # Render 백엔드 URL
+        "*",  # 임시로 모든 도메인 허용 (개발용)
     ],
     allow_credentials=True,
     allow_methods=["*"],
