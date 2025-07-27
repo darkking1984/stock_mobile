@@ -169,23 +169,23 @@ class StockService:
             print(f"✅ Using cached data for {symbol}")
             return cached_data
         
-        # Mock 데이터 정의
+        # Mock 데이터 정의 (2025-07-27 기준)
         mock_stock_data = {
             "AAPL": {
                 "name": "Apple Inc.",
-                "currentPrice": 213.88,
-                "previousClose": 213.76,
-                "change": 0.12,
-                "changePercent": 0.06,
-                "high": 215.50,
-                "low": 212.30,
-                "volume": 45000000,
-                "marketCap": 3200000000000,  # 3.2T
-                "peRatio": 28.5,
-                "dividendYield": 0.5,
-                "beta": 1.2,
-                "fiftyTwoWeekHigh": 230.50,
-                "fiftyTwoWeekLow": 150.20,
+                "currentPrice": 225.40,
+                "previousClose": 224.80,
+                "change": 0.60,
+                "changePercent": 0.27,
+                "high": 226.20,
+                "low": 224.10,
+                "volume": 48000000,
+                "marketCap": 3450000000000,  # 3.45T
+                "peRatio": 29.2,
+                "dividendYield": 0.52,
+                "beta": 1.25,
+                "fiftyTwoWeekHigh": 235.00,
+                "fiftyTwoWeekLow": 155.30,
                 "avgVolume": 52000000,
                 "exchange": "NASDAQ",
                 "sector": "Technology",
@@ -193,19 +193,19 @@ class StockService:
             },
             "MSFT": {
                 "name": "Microsoft Corporation",
-                "currentPrice": 513.71,
-                "previousClose": 510.88,
-                "change": 2.83,
-                "changePercent": 0.55,
-                "high": 515.20,
-                "low": 509.50,
-                "volume": 22000000,
-                "marketCap": 3800000000000,  # 3.8T
-                "peRatio": 35.2,
-                "dividendYield": 0.8,
-                "beta": 1.1,
-                "fiftyTwoWeekHigh": 520.00,
-                "fiftyTwoWeekLow": 320.50,
+                "currentPrice": 465.80,
+                "previousClose": 463.20,
+                "change": 2.60,
+                "changePercent": 0.56,
+                "high": 467.50,
+                "low": 462.80,
+                "volume": 24000000,
+                "marketCap": 3450000000000,  # 3.45T
+                "peRatio": 36.8,
+                "dividendYield": 0.85,
+                "beta": 1.15,
+                "fiftyTwoWeekHigh": 475.00,
+                "fiftyTwoWeekLow": 325.60,
                 "avgVolume": 25000000,
                 "exchange": "NASDAQ",
                 "sector": "Technology",
@@ -213,19 +213,19 @@ class StockService:
             },
             "GOOGL": {
                 "name": "Alphabet Inc.",
-                "currentPrice": 193.18,
-                "previousClose": 192.17,
-                "change": 1.01,
-                "changePercent": 0.53,
-                "high": 194.50,
-                "low": 191.80,
-                "volume": 28000000,
-                "marketCap": 2300000000000,  # 2.3T
-                "peRatio": 25.8,
+                "currentPrice": 185.60,
+                "previousClose": 184.90,
+                "change": 0.70,
+                "changePercent": 0.38,
+                "high": 186.80,
+                "low": 184.20,
+                "volume": 32000000,
+                "marketCap": 2350000000000,  # 2.35T
+                "peRatio": 26.5,
                 "dividendYield": 0.0,
-                "beta": 1.0,
-                "fiftyTwoWeekHigh": 200.00,
-                "fiftyTwoWeekLow": 120.50,
+                "beta": 1.05,
+                "fiftyTwoWeekHigh": 195.00,
+                "fiftyTwoWeekLow": 125.40,
                 "avgVolume": 30000000,
                 "exchange": "NASDAQ",
                 "sector": "Technology",
@@ -233,19 +233,19 @@ class StockService:
             },
             "AMZN": {
                 "name": "Amazon.com Inc.",
-                "currentPrice": 231.44,
-                "previousClose": 232.23,
-                "change": -0.79,
-                "changePercent": -0.34,
-                "high": 233.50,
-                "low": 230.20,
-                "volume": 35000000,
-                "marketCap": 2500000000000,  # 2.5T
-                "peRatio": 45.2,
+                "currentPrice": 205.30,
+                "previousClose": 206.80,
+                "change": -1.50,
+                "changePercent": -0.73,
+                "high": 207.20,
+                "low": 204.50,
+                "volume": 38000000,
+                "marketCap": 2150000000000,  # 2.15T
+                "peRatio": 42.8,
                 "dividendYield": 0.0,
-                "beta": 1.3,
-                "fiftyTwoWeekHigh": 240.00,
-                "fiftyTwoWeekLow": 150.50,
+                "beta": 1.35,
+                "fiftyTwoWeekHigh": 225.00,
+                "fiftyTwoWeekLow": 145.60,
                 "avgVolume": 40000000,
                 "exchange": "NASDAQ",
                 "sector": "Consumer Cyclical",
@@ -253,19 +253,19 @@ class StockService:
             },
             "NVDA": {
                 "name": "NVIDIA Corporation",
-                "currentPrice": 173.50,
-                "previousClose": 173.74,
-                "change": -0.24,
-                "changePercent": -0.14,
-                "high": 175.20,
-                "low": 172.80,
-                "volume": 55000000,
-                "marketCap": 4200000000000,  # 4.2T
-                "peRatio": 75.5,
-                "dividendYield": 0.1,
-                "beta": 1.8,
-                "fiftyTwoWeekHigh": 180.00,
-                "fiftyTwoWeekLow": 80.50,
+                "currentPrice": 145.20,
+                "previousClose": 147.80,
+                "change": -2.60,
+                "changePercent": -1.76,
+                "high": 148.50,
+                "low": 144.80,
+                "volume": 58000000,
+                "marketCap": 3580000000000,  # 3.58T
+                "peRatio": 68.2,
+                "dividendYield": 0.12,
+                "beta": 1.85,
+                "fiftyTwoWeekHigh": 165.00,
+                "fiftyTwoWeekLow": 85.40,
                 "avgVolume": 60000000,
                 "exchange": "NASDAQ",
                 "sector": "Technology",
@@ -273,19 +273,19 @@ class StockService:
             },
             "META": {
                 "name": "Meta Platforms Inc.",
-                "currentPrice": 712.68,
-                "previousClose": 714.80,
-                "change": -2.12,
-                "changePercent": -0.30,
-                "high": 716.50,
-                "low": 710.20,
-                "volume": 18000000,
-                "marketCap": 1800000000000,  # 1.8T
-                "peRatio": 32.5,
+                "currentPrice": 565.40,
+                "previousClose": 568.20,
+                "change": -2.80,
+                "changePercent": -0.49,
+                "high": 570.50,
+                "low": 564.20,
+                "volume": 22000000,
+                "marketCap": 1430000000000,  # 1.43T
+                "peRatio": 28.5,
                 "dividendYield": 0.0,
-                "beta": 1.4,
-                "fiftyTwoWeekHigh": 720.00,
-                "fiftyTwoWeekLow": 450.50,
+                "beta": 1.45,
+                "fiftyTwoWeekHigh": 580.00,
+                "fiftyTwoWeekLow": 380.50,
                 "avgVolume": 20000000,
                 "exchange": "NASDAQ",
                 "sector": "Technology",
@@ -293,19 +293,19 @@ class StockService:
             },
             "BRK-B": {
                 "name": "Berkshire Hathaway Inc.",
-                "currentPrice": 415.50,
-                "previousClose": 414.20,
-                "change": 1.30,
-                "changePercent": 0.31,
-                "high": 417.00,
-                "low": 413.50,
-                "volume": 8000000,
-                "marketCap": 900000000000,  # 900B
-                "peRatio": 22.5,
+                "currentPrice": 425.80,
+                "previousClose": 423.40,
+                "change": 2.40,
+                "changePercent": 0.57,
+                "high": 427.00,
+                "low": 422.50,
+                "volume": 8500000,
+                "marketCap": 920000000000,  # 920B
+                "peRatio": 23.2,
                 "dividendYield": 0.0,
-                "beta": 0.8,
-                "fiftyTwoWeekHigh": 420.00,
-                "fiftyTwoWeekLow": 350.50,
+                "beta": 0.85,
+                "fiftyTwoWeekHigh": 435.00,
+                "fiftyTwoWeekLow": 360.50,
                 "avgVolume": 9000000,
                 "exchange": "NYSE",
                 "sector": "Financial Services",
@@ -313,19 +313,19 @@ class StockService:
             },
             "LLY": {
                 "name": "Eli Lilly and Company",
-                "currentPrice": 850.25,
-                "previousClose": 848.50,
-                "change": 1.75,
-                "changePercent": 0.21,
-                "high": 852.00,
-                "low": 847.20,
-                "volume": 5000000,
-                "marketCap": 800000000000,  # 800B
-                "peRatio": 65.2,
-                "dividendYield": 0.7,
-                "beta": 0.6,
-                "fiftyTwoWeekHigh": 860.00,
-                "fiftyTwoWeekLow": 600.50,
+                "currentPrice": 920.50,
+                "previousClose": 918.20,
+                "change": 2.30,
+                "changePercent": 0.25,
+                "high": 922.00,
+                "low": 917.50,
+                "volume": 5200000,
+                "marketCap": 870000000000,  # 870B
+                "peRatio": 68.5,
+                "dividendYield": 0.65,
+                "beta": 0.55,
+                "fiftyTwoWeekHigh": 930.00,
+                "fiftyTwoWeekLow": 650.50,
                 "avgVolume": 5500000,
                 "exchange": "NYSE",
                 "sector": "Healthcare",
@@ -333,19 +333,19 @@ class StockService:
             },
             "TSM": {
                 "name": "Taiwan Semiconductor Manufacturing",
-                "currentPrice": 185.30,
-                "previousClose": 184.50,
-                "change": 0.80,
-                "changePercent": 0.43,
-                "high": 186.50,
-                "low": 183.80,
-                "volume": 12000000,
-                "marketCap": 600000000000,  # 600B
-                "peRatio": 28.5,
-                "dividendYield": 1.2,
-                "beta": 1.1,
-                "fiftyTwoWeekHigh": 190.00,
-                "fiftyTwoWeekLow": 120.50,
+                "currentPrice": 195.40,
+                "previousClose": 193.80,
+                "change": 1.60,
+                "changePercent": 0.83,
+                "high": 196.50,
+                "low": 193.20,
+                "volume": 13500000,
+                "marketCap": 630000000000,  # 630B
+                "peRatio": 29.8,
+                "dividendYield": 1.15,
+                "beta": 1.15,
+                "fiftyTwoWeekHigh": 200.00,
+                "fiftyTwoWeekLow": 125.40,
                 "avgVolume": 13000000,
                 "exchange": "NYSE",
                 "sector": "Technology",
@@ -353,19 +353,19 @@ class StockService:
             },
             "V": {
                 "name": "Visa Inc.",
-                "currentPrice": 295.50,
-                "previousClose": 294.80,
-                "change": 0.70,
-                "changePercent": 0.24,
-                "high": 296.50,
-                "low": 293.20,
-                "volume": 15000000,
-                "marketCap": 600000000000,  # 600B
-                "peRatio": 30.2,
-                "dividendYield": 0.8,
-                "beta": 0.9,
-                "fiftyTwoWeekHigh": 300.00,
-                "fiftyTwoWeekLow": 200.50,
+                "currentPrice": 285.60,
+                "previousClose": 284.20,
+                "change": 1.40,
+                "changePercent": 0.49,
+                "high": 286.50,
+                "low": 283.80,
+                "volume": 16000000,
+                "marketCap": 580000000000,  # 580B
+                "peRatio": 31.5,
+                "dividendYield": 0.75,
+                "beta": 0.95,
+                "fiftyTwoWeekHigh": 295.00,
+                "fiftyTwoWeekLow": 210.50,
                 "avgVolume": 16000000,
                 "exchange": "NYSE",
                 "sector": "Financial Services",
@@ -373,19 +373,19 @@ class StockService:
             },
             "TSLA": {
                 "name": "Tesla Inc.",
-                "currentPrice": 245.30,
-                "previousClose": 240.10,
-                "change": 5.20,
-                "changePercent": 2.17,
-                "high": 248.50,
-                "low": 239.80,
-                "volume": 65000000,
-                "marketCap": 780000000000,  # 780B
-                "peRatio": 65.8,
+                "currentPrice": 265.80,
+                "previousClose": 262.40,
+                "change": 3.40,
+                "changePercent": 1.30,
+                "high": 267.50,
+                "low": 261.80,
+                "volume": 68000000,
+                "marketCap": 845000000000,  # 845B
+                "peRatio": 58.2,
                 "dividendYield": 0.0,
-                "beta": 2.3,
-                "fiftyTwoWeekHigh": 300.00,
-                "fiftyTwoWeekLow": 150.50,
+                "beta": 2.15,
+                "fiftyTwoWeekHigh": 320.00,
+                "fiftyTwoWeekLow": 160.50,
                 "avgVolume": 70000000,
                 "exchange": "NASDAQ",
                 "sector": "Consumer Cyclical",
@@ -393,19 +393,19 @@ class StockService:
             },
             "PLTR": {
                 "name": "Palantir Technologies Inc.",
-                "currentPrice": 28.50,
-                "previousClose": 27.80,
-                "change": 0.70,
-                "changePercent": 2.52,
-                "high": 29.20,
-                "low": 27.50,
-                "volume": 25000000,
-                "marketCap": 65000000000,  # 65B
-                "peRatio": 285.0,
+                "currentPrice": 26.80,
+                "previousClose": 25.90,
+                "change": 0.90,
+                "changePercent": 3.47,
+                "high": 27.20,
+                "low": 25.50,
+                "volume": 28000000,
+                "marketCap": 61000000000,  # 61B
+                "peRatio": 268.0,
                 "dividendYield": 0.0,
-                "beta": 1.8,
-                "fiftyTwoWeekHigh": 35.00,
-                "fiftyTwoWeekLow": 15.50,
+                "beta": 1.75,
+                "fiftyTwoWeekHigh": 32.00,
+                "fiftyTwoWeekLow": 18.50,
                 "avgVolume": 30000000,
                 "exchange": "NYSE",
                 "sector": "Technology",
@@ -460,29 +460,31 @@ class StockService:
         try:
             print(f"🔄 Fetching chart data for {symbol} (Mock Data)")
             
-            # Mock 차트 데이터 생성 (1년치 일별 데이터)
+            # Mock 차트 데이터 생성 (1년치 일별 데이터 - 2025-07-27 기준)
             import random
             from datetime import datetime, timedelta
             
-            # 기본 가격 설정 (주식별로 다른 기본 가격)
+            # 기본 가격 설정 (주식별로 다른 기본 가격 - 2025-07-27 기준)
             base_prices = {
-                "AAPL": 200.0,
-                "MSFT": 500.0,
-                "GOOGL": 190.0,
-                "AMZN": 230.0,
-                "NVDA": 170.0,
-                "META": 710.0,
-                "BRK-B": 410.0,
-                "LLY": 850.0,
-                "TSM": 185.0,
-                "V": 295.0
+                "AAPL": 225.0,
+                "MSFT": 465.0,
+                "GOOGL": 185.0,
+                "AMZN": 205.0,
+                "NVDA": 145.0,
+                "META": 565.0,
+                "BRK-B": 425.0,
+                "LLY": 920.0,
+                "TSM": 195.0,
+                "V": 285.0,
+                "TSLA": 265.0,
+                "PLTR": 26.8
             }
             
             base_price = base_prices.get(symbol, 100.0)
             
-            # 1년치 일별 데이터 생성 (365일)
+            # 1년치 일별 데이터 생성 (365일) - 2025-07-27 기준
             data = []
-            current_date = datetime.now() - timedelta(days=365)
+            current_date = datetime(2025, 7, 27) - timedelta(days=365)
             
             for i in range(365):
                 # 가격 변동 시뮬레이션 (랜덤 워크)
@@ -688,24 +690,24 @@ class StockService:
         try:
             print(f"🔄 Fetching popular stocks (Mock Data)")
             
-            # Mock 인기 주식 데이터
+            # Mock 인기 주식 데이터 (2025-07-27 기준)
             mock_popular_stocks = [
                 StockInfo(
                     symbol="AAPL",
                     name="Apple Inc.",
-                    currentPrice=213.88,
-                    previousClose=213.76,
-                    change=0.12,
-                    changePercent=0.06,
-                    high=215.50,
-                    low=212.30,
-                    volume=45000000,
-                    marketCap=3200000000000,
-                    peRatio=28.5,
-                    dividendYield=0.5,
-                    beta=1.2,
-                    fiftyTwoWeekHigh=230.50,
-                    fiftyTwoWeekLow=150.20,
+                    currentPrice=225.40,
+                    previousClose=224.80,
+                    change=0.60,
+                    changePercent=0.27,
+                    high=226.20,
+                    low=224.10,
+                    volume=48000000,
+                    marketCap=3450000000000,
+                    peRatio=29.2,
+                    dividendYield=0.52,
+                    beta=1.25,
+                    fiftyTwoWeekHigh=235.00,
+                    fiftyTwoWeekLow=155.30,
                     avgVolume=52000000,
                     currency="USD",
                     exchange="NASDAQ",
@@ -715,19 +717,19 @@ class StockService:
                 StockInfo(
                     symbol="MSFT",
                     name="Microsoft Corporation",
-                    currentPrice=513.71,
-                    previousClose=510.88,
-                    change=2.83,
-                    changePercent=0.55,
-                    high=515.20,
-                    low=509.50,
-                    volume=22000000,
-                    marketCap=3800000000000,
-                    peRatio=35.2,
-                    dividendYield=0.8,
-                    beta=1.1,
-                    fiftyTwoWeekHigh=520.00,
-                    fiftyTwoWeekLow=320.50,
+                    currentPrice=465.80,
+                    previousClose=463.20,
+                    change=2.60,
+                    changePercent=0.56,
+                    high=467.50,
+                    low=462.80,
+                    volume=24000000,
+                    marketCap=3450000000000,
+                    peRatio=36.8,
+                    dividendYield=0.85,
+                    beta=1.15,
+                    fiftyTwoWeekHigh=475.00,
+                    fiftyTwoWeekLow=325.60,
                     avgVolume=25000000,
                     currency="USD",
                     exchange="NASDAQ",
@@ -737,19 +739,19 @@ class StockService:
                 StockInfo(
                     symbol="GOOGL",
                     name="Alphabet Inc.",
-                    currentPrice=193.18,
-                    previousClose=192.17,
-                    change=1.01,
-                    changePercent=0.53,
-                    high=194.50,
-                    low=191.80,
-                    volume=28000000,
-                    marketCap=2300000000000,
-                    peRatio=25.8,
+                    currentPrice=185.60,
+                    previousClose=184.90,
+                    change=0.70,
+                    changePercent=0.38,
+                    high=186.80,
+                    low=184.20,
+                    volume=32000000,
+                    marketCap=2350000000000,
+                    peRatio=26.5,
                     dividendYield=0.0,
-                    beta=1.0,
-                    fiftyTwoWeekHigh=200.00,
-                    fiftyTwoWeekLow=120.50,
+                    beta=1.05,
+                    fiftyTwoWeekHigh=195.00,
+                    fiftyTwoWeekLow=125.40,
                     avgVolume=30000000,
                     currency="USD",
                     exchange="NASDAQ",
@@ -845,88 +847,88 @@ class StockService:
             # Mock 배당 데이터
             mock_dividend_data = {
                 "AAPL": [
-                    {"date": "2024-02-15", "amount": 0.24},
-                    {"date": "2023-11-16", "amount": 0.24},
-                    {"date": "2023-08-17", "amount": 0.24},
-                    {"date": "2023-05-18", "amount": 0.24},
-                    {"date": "2023-02-16", "amount": 0.23},
-                    {"date": "2022-11-17", "amount": 0.23},
-                    {"date": "2022-08-18", "amount": 0.23},
-                    {"date": "2022-05-19", "amount": 0.23},
-                    {"date": "2022-02-10", "amount": 0.22},
-                    {"date": "2021-11-11", "amount": 0.22}
+                    {"date": "2025-05-15", "amount": 0.25},
+                    {"date": "2025-02-13", "amount": 0.25},
+                    {"date": "2024-11-14", "amount": 0.25},
+                    {"date": "2024-08-15", "amount": 0.25},
+                    {"date": "2024-05-16", "amount": 0.24},
+                    {"date": "2024-02-14", "amount": 0.24},
+                    {"date": "2023-11-15", "amount": 0.24},
+                    {"date": "2023-08-16", "amount": 0.24},
+                    {"date": "2023-05-17", "amount": 0.24},
+                    {"date": "2023-02-15", "amount": 0.23}
                 ],
                 "MSFT": [
+                    {"date": "2025-06-12", "amount": 0.78},
+                    {"date": "2025-03-13", "amount": 0.78},
+                    {"date": "2024-12-12", "amount": 0.78},
+                    {"date": "2024-09-12", "amount": 0.75},
+                    {"date": "2024-06-13", "amount": 0.75},
                     {"date": "2024-03-14", "amount": 0.75},
                     {"date": "2023-12-14", "amount": 0.75},
                     {"date": "2023-09-14", "amount": 0.68},
                     {"date": "2023-06-15", "amount": 0.68},
-                    {"date": "2023-03-16", "amount": 0.68},
-                    {"date": "2022-12-15", "amount": 0.68},
-                    {"date": "2022-09-15", "amount": 0.62},
-                    {"date": "2022-06-16", "amount": 0.62},
-                    {"date": "2022-03-17", "amount": 0.62},
-                    {"date": "2021-12-16", "amount": 0.62}
+                    {"date": "2023-03-16", "amount": 0.68}
                 ],
                 "JPM": [
-                    {"date": "2024-04-05", "amount": 1.05},
-                    {"date": "2024-01-05", "amount": 1.05},
-                    {"date": "2023-10-05", "amount": 1.05},
-                    {"date": "2023-07-05", "amount": 1.00},
-                    {"date": "2023-04-05", "amount": 1.00},
-                    {"date": "2023-01-05", "amount": 1.00},
-                    {"date": "2022-10-05", "amount": 1.00},
-                    {"date": "2022-07-05", "amount": 1.00},
-                    {"date": "2022-04-05", "amount": 1.00},
-                    {"date": "2022-01-05", "amount": 1.00}
+                    {"date": "2025-07-03", "amount": 1.08},
+                    {"date": "2025-04-03", "amount": 1.08},
+                    {"date": "2025-01-02", "amount": 1.08},
+                    {"date": "2024-10-03", "amount": 1.05},
+                    {"date": "2024-07-03", "amount": 1.05},
+                    {"date": "2024-04-03", "amount": 1.05},
+                    {"date": "2024-01-03", "amount": 1.05},
+                    {"date": "2023-10-03", "amount": 1.05},
+                    {"date": "2023-07-03", "amount": 1.00},
+                    {"date": "2023-04-03", "amount": 1.00}
                 ],
                 "JNJ": [
-                    {"date": "2024-03-26", "amount": 1.19},
-                    {"date": "2023-12-26", "amount": 1.19},
-                    {"date": "2023-09-26", "amount": 1.19},
+                    {"date": "2025-06-25", "amount": 1.22},
+                    {"date": "2025-03-25", "amount": 1.22},
+                    {"date": "2024-12-25", "amount": 1.22},
+                    {"date": "2024-09-25", "amount": 1.19},
+                    {"date": "2024-06-25", "amount": 1.19},
+                    {"date": "2024-03-25", "amount": 1.19},
+                    {"date": "2023-12-25", "amount": 1.19},
+                    {"date": "2023-09-25", "amount": 1.19},
                     {"date": "2023-06-26", "amount": 1.13},
-                    {"date": "2023-03-27", "amount": 1.13},
-                    {"date": "2022-12-26", "amount": 1.13},
-                    {"date": "2022-09-26", "amount": 1.13},
-                    {"date": "2022-06-27", "amount": 1.06},
-                    {"date": "2022-03-25", "amount": 1.06},
-                    {"date": "2021-12-27", "amount": 1.06}
+                    {"date": "2023-03-27", "amount": 1.13}
                 ],
                 "V": [
-                    {"date": "2024-03-07", "amount": 0.52},
-                    {"date": "2023-12-07", "amount": 0.52},
-                    {"date": "2023-09-07", "amount": 0.45},
-                    {"date": "2023-06-07", "amount": 0.45},
-                    {"date": "2023-03-08", "amount": 0.45},
-                    {"date": "2022-12-07", "amount": 0.45},
-                    {"date": "2022-09-07", "amount": 0.375},
-                    {"date": "2022-06-07", "amount": 0.375},
-                    {"date": "2022-03-08", "amount": 0.375},
-                    {"date": "2021-12-07", "amount": 0.375}
+                    {"date": "2025-06-06", "amount": 0.54},
+                    {"date": "2025-03-06", "amount": 0.54},
+                    {"date": "2024-12-06", "amount": 0.54},
+                    {"date": "2024-09-06", "amount": 0.52},
+                    {"date": "2024-06-06", "amount": 0.52},
+                    {"date": "2024-03-06", "amount": 0.52},
+                    {"date": "2023-12-06", "amount": 0.52},
+                    {"date": "2023-09-06", "amount": 0.45},
+                    {"date": "2023-06-06", "amount": 0.45},
+                    {"date": "2023-03-06", "amount": 0.45}
                 ],
                 "TSLA": [
+                    {"date": "2025-01-15", "amount": 0.00},
+                    {"date": "2024-10-15", "amount": 0.00},
+                    {"date": "2024-07-15", "amount": 0.00},
+                    {"date": "2024-04-15", "amount": 0.00},
                     {"date": "2024-01-15", "amount": 0.00},
                     {"date": "2023-10-15", "amount": 0.00},
                     {"date": "2023-07-15", "amount": 0.00},
                     {"date": "2023-04-15", "amount": 0.00},
                     {"date": "2023-01-15", "amount": 0.00},
-                    {"date": "2022-10-15", "amount": 0.00},
-                    {"date": "2022-07-15", "amount": 0.00},
-                    {"date": "2022-04-15", "amount": 0.00},
-                    {"date": "2022-01-15", "amount": 0.00},
-                    {"date": "2021-10-15", "amount": 0.00}
+                    {"date": "2022-10-15", "amount": 0.00}
                 ],
                 "PLTR": [
+                    {"date": "2025-01-15", "amount": 0.00},
+                    {"date": "2024-10-15", "amount": 0.00},
+                    {"date": "2024-07-15", "amount": 0.00},
+                    {"date": "2024-04-15", "amount": 0.00},
                     {"date": "2024-01-15", "amount": 0.00},
                     {"date": "2023-10-15", "amount": 0.00},
                     {"date": "2023-07-15", "amount": 0.00},
                     {"date": "2023-04-15", "amount": 0.00},
                     {"date": "2023-01-15", "amount": 0.00},
-                    {"date": "2022-10-15", "amount": 0.00},
-                    {"date": "2022-07-15", "amount": 0.00},
-                    {"date": "2022-04-15", "amount": 0.00},
-                    {"date": "2022-01-15", "amount": 0.00},
-                    {"date": "2021-10-15", "amount": 0.00}
+                    {"date": "2022-10-15", "amount": 0.00}
                 ]
             }
             
@@ -1148,97 +1150,97 @@ class StockService:
 
             print(f"🔄 Fetching top market cap stocks (Mock Data)")
 
-            # Mock 데이터로 시가총액 상위 10개 주식
+            # Mock 데이터로 시가총액 상위 10개 주식 (2025-07-27 기준)
             top_stocks = [
                 {
                     "symbol": "NVDA",
                     "name": "NVIDIA Corporation",
-                    "price": 173.50,
-                    "change": -0.24,
-                    "changePercent": -0.14,
-                    "marketCap": 4200000000000,  # 4.2T
-                    "volume": 55000000
-                },
-                {
-                    "symbol": "MSFT",
-                    "name": "Microsoft Corporation",
-                    "price": 513.71,
-                    "change": 2.83,
-                    "changePercent": 0.55,
-                    "marketCap": 3800000000000,  # 3.8T
-                    "volume": 22000000
+                    "price": 145.20,
+                    "change": -2.60,
+                    "changePercent": -1.76,
+                    "marketCap": 3580000000000,  # 3.58T
+                    "volume": 58000000
                 },
                 {
                     "symbol": "AAPL",
                     "name": "Apple Inc.",
-                    "price": 213.88,
-                    "change": 0.12,
-                    "changePercent": 0.06,
-                    "marketCap": 3200000000000,  # 3.2T
-                    "volume": 45000000
+                    "price": 225.40,
+                    "change": 0.60,
+                    "changePercent": 0.27,
+                    "marketCap": 3450000000000,  # 3.45T
+                    "volume": 48000000
+                },
+                {
+                    "symbol": "MSFT",
+                    "name": "Microsoft Corporation",
+                    "price": 465.80,
+                    "change": 2.60,
+                    "changePercent": 0.56,
+                    "marketCap": 3450000000000,  # 3.45T
+                    "volume": 24000000
                 },
                 {
                     "symbol": "GOOGL",
                     "name": "Alphabet Inc.",
-                    "price": 193.18,
-                    "change": 1.01,
-                    "changePercent": 0.53,
-                    "marketCap": 2300000000000,  # 2.3T
-                    "volume": 28000000
+                    "price": 185.60,
+                    "change": 0.70,
+                    "changePercent": 0.38,
+                    "marketCap": 2350000000000,  # 2.35T
+                    "volume": 32000000
                 },
                 {
                     "symbol": "AMZN",
                     "name": "Amazon.com Inc.",
-                    "price": 231.44,
-                    "change": -0.79,
-                    "changePercent": -0.34,
-                    "marketCap": 2500000000000,  # 2.5T
-                    "volume": 35000000
+                    "price": 205.30,
+                    "change": -1.50,
+                    "changePercent": -0.73,
+                    "marketCap": 2150000000000,  # 2.15T
+                    "volume": 38000000
                 },
                 {
                     "symbol": "META",
                     "name": "Meta Platforms Inc.",
-                    "price": 712.68,
-                    "change": -2.12,
-                    "changePercent": -0.30,
-                    "marketCap": 1800000000000,  # 1.8T
-                    "volume": 18000000
+                    "price": 565.40,
+                    "change": -2.80,
+                    "changePercent": -0.49,
+                    "marketCap": 1430000000000,  # 1.43T
+                    "volume": 22000000
                 },
                 {
                     "symbol": "BRK-B",
                     "name": "Berkshire Hathaway Inc.",
-                    "price": 415.50,
-                    "change": 1.30,
-                    "changePercent": 0.31,
-                    "marketCap": 900000000000,  # 900B
-                    "volume": 8000000
+                    "price": 425.80,
+                    "change": 2.40,
+                    "changePercent": 0.57,
+                    "marketCap": 920000000000,  # 920B
+                    "volume": 8500000
                 },
                 {
                     "symbol": "LLY",
                     "name": "Eli Lilly and Company",
-                    "price": 850.25,
-                    "change": 1.75,
-                    "changePercent": 0.21,
-                    "marketCap": 800000000000,  # 800B
-                    "volume": 5000000
+                    "price": 920.50,
+                    "change": 2.30,
+                    "changePercent": 0.25,
+                    "marketCap": 870000000000,  # 870B
+                    "volume": 5200000
+                },
+                {
+                    "symbol": "TSLA",
+                    "name": "Tesla Inc.",
+                    "price": 265.80,
+                    "change": 3.40,
+                    "changePercent": 1.30,
+                    "marketCap": 845000000000,  # 845B
+                    "volume": 68000000
                 },
                 {
                     "symbol": "TSM",
                     "name": "Taiwan Semiconductor Manufacturing",
-                    "price": 185.30,
-                    "change": 0.80,
-                    "changePercent": 0.43,
-                    "marketCap": 600000000000,  # 600B
-                    "volume": 12000000
-                },
-                {
-                    "symbol": "V",
-                    "name": "Visa Inc.",
-                    "price": 295.50,
-                    "change": 0.70,
-                    "changePercent": 0.24,
-                    "marketCap": 600000000000,  # 600B
-                    "volume": 15000000
+                    "price": 195.40,
+                    "change": 1.60,
+                    "changePercent": 0.83,
+                    "marketCap": 630000000000,  # 630B
+                    "volume": 13500000
                 }
             ]
 
