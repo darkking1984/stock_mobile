@@ -47,10 +47,13 @@ def create_test_user():
 # 애플리케이션 시작 시 테스트 사용자 생성
 create_test_user()
 
+print("🚀 Stock Dashboard API v1.0.1 - Updated at 2025-07-27")
+print("✅ CORS and authentication fixes applied")
+
 app = FastAPI(
     title="Stock Dashboard API",
     description="미국 주식 정보 대시보드 API",
-    version="1.0.0"
+    version="1.0.1"
 )
 
 # CORS 설정 - Render 배포용
