@@ -660,62 +660,187 @@ class StockService:
             return []
 
     async def get_financial_data(self, symbol: str) -> FinancialData:
-        """주식 재무정보 조회 (MVP: 최근 연간 데이터 1건만)"""
+        """주식 재무정보 조회 (Mock Data)"""
         try:
-            ticker = yf.Ticker(symbol)
-            fin = ticker.financials
-            if fin is None or fin.empty:
-                raise ValueError("No financial data")
-            # 최근 연도 데이터 추출
-            latest_col = fin.columns[0]
-            revenue = float(fin.loc["Total Revenue", latest_col]) if "Total Revenue" in fin.index else None
-            net_income = float(fin.loc["Net Income", latest_col]) if "Net Income" in fin.index else None
-            operating_income = float(fin.loc["Operating Income", latest_col]) if "Operating Income" in fin.index else None
-            return FinancialData(
-                symbol=symbol,
-                period=str(latest_col),
-                revenue=revenue,
-                netIncome=net_income,
-                operatingIncome=operating_income
-            )
+            print(f"🔄 Fetching financial data for {symbol} (Mock Data)")
+            
+            # Mock 재무 데이터
+            mock_financial_data = {
+                "AAPL": {
+                    "revenue": 394328000000,  # 394.3B
+                    "netIncome": 96995000000,  # 97.0B
+                    "operatingIncome": 114301000000  # 114.3B
+                },
+                "MSFT": {
+                    "revenue": 211915000000,  # 211.9B
+                    "netIncome": 72409000000,  # 72.4B
+                    "operatingIncome": 88452000000  # 88.5B
+                },
+                "GOOGL": {
+                    "revenue": 307394000000,  # 307.4B
+                    "netIncome": 73795000000,  # 73.8B
+                    "operatingIncome": 84293000000  # 84.3B
+                },
+                "AMZN": {
+                    "revenue": 574785000000,  # 574.8B
+                    "netIncome": 30425000000,  # 30.4B
+                    "operatingIncome": 51242000000  # 51.2B
+                },
+                "NVDA": {
+                    "revenue": 60922000000,  # 60.9B
+                    "netIncome": 29760000000,  # 29.8B
+                    "operatingIncome": 32972000000  # 33.0B
+                }
+            }
+            
+            # Mock 데이터에서 재무 정보 가져오기
+            if symbol in mock_financial_data:
+                data = mock_financial_data[symbol]
+                financial_data = FinancialData(
+                    symbol=symbol,
+                    period="2024",
+                    revenue=data["revenue"],
+                    netIncome=data["netIncome"],
+                    operatingIncome=data["operatingIncome"]
+                )
+                print(f"✅ Mock financial data: Returned data for {symbol}")
+                return financial_data
+            else:
+                # 기본 Mock 데이터 (알 수 없는 주식용)
+                financial_data = FinancialData(
+                    symbol=symbol,
+                    period="2024",
+                    revenue=10000000000,  # 10B
+                    netIncome=1500000000,  # 1.5B
+                    operatingIncome=2000000000  # 2B
+                )
+                print(f"✅ Mock financial data: Returned default data for {symbol}")
+                return financial_data
+                
         except Exception as e:
+            print(f"❌ Error in get_financial_data: {e}")
             raise ValueError(f"Failed to fetch financial data for {symbol}: {str(e)}")
 
     async def get_dividend_history(self, symbol: str, years: int = 5) -> list:
-        """주식 배당 이력 조회 (최근 N년)"""
+        """주식 배당 이력 조회 (Mock Data)"""
         try:
-            ticker = yf.Ticker(symbol)
-            div = ticker.dividends
-            if div is None or div.empty:
-                return []
-            # 인덱스의 타임존 제거
-            div.index = div.index.tz_localize(None)
-            # 최근 N년 데이터 필터링
-            div = div[div.index > pd.Timestamp.now() - pd.DateOffset(years=years)]
-            result = [
-                DividendData(
-                    symbol=symbol,
-                    date=str(idx.date()),
-                    amount=float(val),
-                    type="cash"
-                ) for idx, val in div.items()
-            ]
-            return result
+            print(f"🔄 Fetching dividend history for {symbol} (Mock Data)")
+            
+            # Mock 배당 데이터
+            mock_dividend_data = {
+                "AAPL": [
+                    {"date": "2024-02-15", "amount": 0.24},
+                    {"date": "2023-11-16", "amount": 0.24},
+                    {"date": "2023-08-17", "amount": 0.24},
+                    {"date": "2023-05-18", "amount": 0.24},
+                    {"date": "2023-02-16", "amount": 0.23},
+                    {"date": "2022-11-17", "amount": 0.23},
+                    {"date": "2022-08-18", "amount": 0.23},
+                    {"date": "2022-05-19", "amount": 0.23},
+                    {"date": "2022-02-10", "amount": 0.22},
+                    {"date": "2021-11-11", "amount": 0.22}
+                ],
+                "MSFT": [
+                    {"date": "2024-03-14", "amount": 0.75},
+                    {"date": "2023-12-14", "amount": 0.75},
+                    {"date": "2023-09-14", "amount": 0.68},
+                    {"date": "2023-06-15", "amount": 0.68},
+                    {"date": "2023-03-16", "amount": 0.68},
+                    {"date": "2022-12-15", "amount": 0.68},
+                    {"date": "2022-09-15", "amount": 0.62},
+                    {"date": "2022-06-16", "amount": 0.62},
+                    {"date": "2022-03-17", "amount": 0.62},
+                    {"date": "2021-12-16", "amount": 0.62}
+                ],
+                "JPM": [
+                    {"date": "2024-04-05", "amount": 1.05},
+                    {"date": "2024-01-05", "amount": 1.05},
+                    {"date": "2023-10-05", "amount": 1.05},
+                    {"date": "2023-07-05", "amount": 1.00},
+                    {"date": "2023-04-05", "amount": 1.00},
+                    {"date": "2023-01-05", "amount": 1.00},
+                    {"date": "2022-10-05", "amount": 1.00},
+                    {"date": "2022-07-05", "amount": 1.00},
+                    {"date": "2022-04-05", "amount": 1.00},
+                    {"date": "2022-01-05", "amount": 1.00}
+                ],
+                "JNJ": [
+                    {"date": "2024-03-26", "amount": 1.19},
+                    {"date": "2023-12-26", "amount": 1.19},
+                    {"date": "2023-09-26", "amount": 1.19},
+                    {"date": "2023-06-26", "amount": 1.13},
+                    {"date": "2023-03-27", "amount": 1.13},
+                    {"date": "2022-12-26", "amount": 1.13},
+                    {"date": "2022-09-26", "amount": 1.13},
+                    {"date": "2022-06-27", "amount": 1.06},
+                    {"date": "2022-03-25", "amount": 1.06},
+                    {"date": "2021-12-27", "amount": 1.06}
+                ],
+                "V": [
+                    {"date": "2024-03-07", "amount": 0.52},
+                    {"date": "2023-12-07", "amount": 0.52},
+                    {"date": "2023-09-07", "amount": 0.45},
+                    {"date": "2023-06-07", "amount": 0.45},
+                    {"date": "2023-03-08", "amount": 0.45},
+                    {"date": "2022-12-07", "amount": 0.45},
+                    {"date": "2022-09-07", "amount": 0.375},
+                    {"date": "2022-06-07", "amount": 0.375},
+                    {"date": "2022-03-08", "amount": 0.375},
+                    {"date": "2021-12-07", "amount": 0.375}
+                ]
+            }
+            
+            # Mock 데이터에서 배당 이력 가져오기
+            if symbol in mock_dividend_data:
+                dividend_history = []
+                for dividend in mock_dividend_data[symbol]:
+                    dividend_history.append(DividendData(
+                        symbol=symbol,
+                        date=dividend["date"],
+                        amount=dividend["amount"],
+                        type="cash"
+                    ))
+                print(f"✅ Mock dividend history: Returned {len(dividend_history)} records for {symbol}")
+                return dividend_history
+            else:
+                # 기본 Mock 데이터 (알 수 없는 주식용)
+                dividend_history = [
+                    DividendData(symbol=symbol, date="2024-03-15", amount=0.50, type="cash"),
+                    DividendData(symbol=symbol, date="2023-12-15", amount=0.50, type="cash"),
+                    DividendData(symbol=symbol, date="2023-09-15", amount=0.45, type="cash"),
+                    DividendData(symbol=symbol, date="2023-06-15", amount=0.45, type="cash"),
+                    DividendData(symbol=symbol, date="2023-03-15", amount=0.45, type="cash")
+                ]
+                print(f"✅ Mock dividend history: Returned default data for {symbol}")
+                return dividend_history
+                
         except Exception as e:
+            print(f"❌ Error in get_dividend_history: {e}")
             raise ValueError(f"Failed to fetch dividend history for {symbol}: {str(e)}")
 
     async def compare_stocks(self, symbols: list) -> list:
-        """여러 종목 정보 비교"""
+        """여러 종목 정보 비교 (Mock Data)"""
         try:
+            print(f"🔄 Comparing stocks: {symbols} (Mock Data)")
+            
             result = []
             for symbol in symbols:
                 try:
                     info = await self.get_stock_info(symbol)
-                    result.append(info)
-                except Exception:
+                    if info:
+                        result.append(info)
+                        print(f"✅ Added {symbol} to comparison")
+                    else:
+                        print(f"⚠️ No data for {symbol}")
+                except Exception as e:
+                    print(f"❌ Error processing {symbol}: {e}")
                     continue
+            
+            print(f"✅ Mock stock comparison: Returned {len(result)} stocks")
             return result
+            
         except Exception as e:
+            print(f"❌ Error in compare_stocks: {e}")
             raise ValueError(f"Failed to compare stocks: {str(e)}") 
 
     async def get_company_description(self, symbol: str) -> dict:
@@ -947,75 +1072,90 @@ class StockService:
             return []
 
     async def get_index_stocks(self, index_name: str) -> List[Dict[str, Any]]:
-        """지수별 상위 주식 조회 (실시간)"""
+        """지수별 상위 주식 조회 (Mock Data)"""
         try:
             # 캐시된 데이터 사용
             cached_data = self._get_cache(self._get_cache_key('INDEX_STOCKS', index_name=index_name))
             if cached_data:
-                print(f"Returning cached index stocks for {index_name}")
+                print(f"✅ Returning cached index stocks for {index_name}")
                 return cached_data
 
-            # 각 지수별 주요 주식 리스트 (실제 지수 구성 기반)
-            index_constituents = {
+            print(f"🔄 Fetching index stocks for {index_name} (Mock Data)")
+
+            # Mock 지수별 주식 데이터
+            mock_index_data = {
                 "dow": [
-                    "AAPL", "MSFT", "JPM", "JNJ", "V", "PG", "HD", "UNH", "MA", "DIS",
-                    "WMT", "KO", "PFE", "T", "VZ", "MRK", "ABT", "CVX", "XOM", "CSCO",
-                    "NKE", "MCD", "BA", "CAT", "IBM", "GS", "AXP", "MMM", "DOW", "WBA"
+                    {"symbol": "AAPL", "name": "Apple Inc.", "price": 213.88, "change": 0.12, "changePercent": 0.06, "marketCap": 3200000000000, "volume": 45000000},
+                    {"symbol": "MSFT", "name": "Microsoft Corporation", "price": 513.71, "change": 2.83, "changePercent": 0.55, "marketCap": 3800000000000, "volume": 22000000},
+                    {"symbol": "JPM", "name": "JPMorgan Chase & Co.", "price": 195.50, "change": 1.20, "changePercent": 0.62, "marketCap": 580000000000, "volume": 12000000},
+                    {"symbol": "JNJ", "name": "Johnson & Johnson", "price": 165.30, "change": -0.70, "changePercent": -0.42, "marketCap": 400000000000, "volume": 8000000},
+                    {"symbol": "V", "name": "Visa Inc.", "price": 295.50, "change": 0.70, "changePercent": 0.24, "marketCap": 600000000000, "volume": 15000000},
+                    {"symbol": "PG", "name": "Procter & Gamble Co.", "price": 158.20, "change": 0.80, "changePercent": 0.51, "marketCap": 380000000000, "volume": 9000000},
+                    {"symbol": "HD", "name": "Home Depot Inc.", "price": 385.40, "change": -2.10, "changePercent": -0.54, "marketCap": 380000000000, "volume": 7000000},
+                    {"symbol": "UNH", "name": "UnitedHealth Group Inc.", "price": 485.60, "change": 3.40, "changePercent": 0.70, "marketCap": 450000000000, "volume": 5000000},
+                    {"symbol": "MA", "name": "Mastercard Inc.", "price": 425.80, "change": 1.20, "changePercent": 0.28, "marketCap": 400000000000, "volume": 6000000},
+                    {"symbol": "DIS", "name": "Walt Disney Co.", "price": 95.20, "change": -0.80, "changePercent": -0.83, "marketCap": 180000000000, "volume": 12000000}
                 ],
                 "nasdaq": [
-                    "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "NFLX", 
-                    "ADBE", "PYPL", "INTC", "AMD", "CRM", "ORCL", "CSCO", "QCOM",
-                    "AVGO", "TXN", "MU", "ADI", "KLAC", "LRCX", "ASML", "AMAT",
-                    "CHTR", "CMCSA", "COST", "PEP", "TMUS", "NFLX"
+                    {"symbol": "AAPL", "name": "Apple Inc.", "price": 213.88, "change": 0.12, "changePercent": 0.06, "marketCap": 3200000000000, "volume": 45000000},
+                    {"symbol": "MSFT", "name": "Microsoft Corporation", "price": 513.71, "change": 2.83, "changePercent": 0.55, "marketCap": 3800000000000, "volume": 22000000},
+                    {"symbol": "GOOGL", "name": "Alphabet Inc.", "price": 193.18, "change": 1.01, "changePercent": 0.53, "marketCap": 2300000000000, "volume": 28000000},
+                    {"symbol": "AMZN", "name": "Amazon.com Inc.", "price": 231.44, "change": -0.79, "changePercent": -0.34, "marketCap": 2500000000000, "volume": 35000000},
+                    {"symbol": "NVDA", "name": "NVIDIA Corporation", "price": 173.50, "change": -0.24, "changePercent": -0.14, "marketCap": 4200000000000, "volume": 55000000},
+                    {"symbol": "META", "name": "Meta Platforms Inc.", "price": 712.68, "change": -2.12, "changePercent": -0.30, "marketCap": 1800000000000, "volume": 18000000},
+                    {"symbol": "TSLA", "name": "Tesla Inc.", "price": 245.30, "change": 5.20, "changePercent": 2.17, "marketCap": 780000000000, "volume": 65000000},
+                    {"symbol": "NFLX", "name": "Netflix Inc.", "price": 485.20, "change": 8.50, "changePercent": 1.78, "marketCap": 210000000000, "volume": 8000000},
+                    {"symbol": "ADBE", "name": "Adobe Inc.", "price": 485.60, "change": -3.40, "changePercent": -0.70, "marketCap": 220000000000, "volume": 4000000},
+                    {"symbol": "PYPL", "name": "PayPal Holdings Inc.", "price": 68.50, "change": 0.80, "changePercent": 1.18, "marketCap": 78000000000, "volume": 15000000}
                 ],
                 "sp500": [
-                    "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "BRK-B", "LLY", 
-                    "TSM", "V", "UNH", "JNJ", "JPM", "PG", "HD", "MA", "DIS", "PFE",
-                    "ABBV", "KO", "PEP", "AVGO", "COST", "TMO", "DHR", "ACN", "WMT",
-                    "MRK", "VZ", "TXN"
+                    {"symbol": "AAPL", "name": "Apple Inc.", "price": 213.88, "change": 0.12, "changePercent": 0.06, "marketCap": 3200000000000, "volume": 45000000},
+                    {"symbol": "MSFT", "name": "Microsoft Corporation", "price": 513.71, "change": 2.83, "changePercent": 0.55, "marketCap": 3800000000000, "volume": 22000000},
+                    {"symbol": "GOOGL", "name": "Alphabet Inc.", "price": 193.18, "change": 1.01, "changePercent": 0.53, "marketCap": 2300000000000, "volume": 28000000},
+                    {"symbol": "AMZN", "name": "Amazon.com Inc.", "price": 231.44, "change": -0.79, "changePercent": -0.34, "marketCap": 2500000000000, "volume": 35000000},
+                    {"symbol": "NVDA", "name": "NVIDIA Corporation", "price": 173.50, "change": -0.24, "changePercent": -0.14, "marketCap": 4200000000000, "volume": 55000000},
+                    {"symbol": "META", "name": "Meta Platforms Inc.", "price": 712.68, "change": -2.12, "changePercent": -0.30, "marketCap": 1800000000000, "volume": 18000000},
+                    {"symbol": "BRK-B", "name": "Berkshire Hathaway Inc.", "price": 415.50, "change": 1.30, "changePercent": 0.31, "marketCap": 900000000000, "volume": 8000000},
+                    {"symbol": "LLY", "name": "Eli Lilly and Company", "price": 850.25, "change": 1.75, "changePercent": 0.21, "marketCap": 800000000000, "volume": 5000000},
+                    {"symbol": "TSM", "name": "Taiwan Semiconductor Manufacturing", "price": 185.30, "change": 0.80, "changePercent": 0.43, "marketCap": 600000000000, "volume": 12000000},
+                    {"symbol": "V", "name": "Visa Inc.", "price": 295.50, "change": 0.70, "changePercent": 0.24, "marketCap": 600000000000, "volume": 15000000}
                 ],
                 "russell2000": [
-                    "IWM", "SMH", "XBI", "ARKK", "TQQQ", "SOXL", "LABU", "DPST", 
-                    "ERX", "TMF", "UCO", "SCO", "UGA", "UNG", "USO", "BNO", "XOP",
-                    "XLE", "XLF", "XLK", "XLV", "XLI", "XLP", "XLY", "XLU", "XLB",
-                    "XLC", "XLRE", "XME", "XRT"
+                    {"symbol": "IWM", "name": "iShares Russell 2000 ETF", "price": 185.40, "change": 1.20, "changePercent": 0.65, "marketCap": 55000000000, "volume": 25000000},
+                    {"symbol": "SMH", "name": "VanEck Vectors Semiconductor ETF", "price": 245.60, "change": 3.40, "changePercent": 1.40, "marketCap": 12000000000, "volume": 8000000},
+                    {"symbol": "XBI", "name": "SPDR S&P Biotech ETF", "price": 85.20, "change": -0.80, "changePercent": -0.93, "marketCap": 8000000000, "volume": 12000000},
+                    {"symbol": "ARKK", "name": "ARK Innovation ETF", "price": 45.80, "change": 1.20, "changePercent": 2.69, "marketCap": 9000000000, "volume": 15000000},
+                    {"symbol": "TQQQ", "name": "ProShares UltraPro QQQ", "price": 65.40, "change": 2.10, "changePercent": 3.32, "marketCap": 15000000000, "volume": 20000000},
+                    {"symbol": "SOXL", "name": "Direxion Daily Semiconductor Bull 3x Shares", "price": 35.60, "change": 1.80, "changePercent": 5.32, "marketCap": 5000000000, "volume": 18000000},
+                    {"symbol": "LABU", "name": "Direxion Daily S&P Biotech Bull 3x Shares", "price": 12.40, "change": 0.60, "changePercent": 5.08, "marketCap": 2000000000, "volume": 10000000},
+                    {"symbol": "DPST", "name": "Direxion Daily Regional Banks Bull 3x Shares", "price": 28.80, "change": -0.40, "changePercent": -1.37, "marketCap": 3000000000, "volume": 8000000},
+                    {"symbol": "ERX", "name": "Direxion Daily Energy Bull 3x Shares", "price": 42.20, "change": 1.60, "changePercent": 3.94, "marketCap": 4000000000, "volume": 12000000},
+                    {"symbol": "TMF", "name": "Direxion Daily 20+ Year Treasury Bull 3x Shares", "price": 15.60, "change": -0.20, "changePercent": -1.27, "marketCap": 2500000000, "volume": 6000000}
                 ]
             }
             
             # 유효한 지수명인지 확인
-            if index_name not in index_constituents:
-                raise ValueError(f"Invalid index name: {index_name}. Must be one of: {list(index_constituents.keys())}")
+            if index_name not in mock_index_data:
+                raise ValueError(f"Invalid index name: {index_name}. Must be one of: {list(mock_index_data.keys())}")
             
-            # 선택된 지수의 구성 주식들 (상위 10개 처리)
-            constituents = index_constituents[index_name][:10]  # 상위 10개
+            # Mock 데이터에서 지수별 주식 정보 가져오기
+            stocks = mock_index_data[index_name]
             
-            # 배치로 주식 정보 가져오기
-            stock_infos = await self.get_stock_info_batch(constituents)
-            
-            # 결과 변환
-            stocks = []
-            for stock_info in stock_infos:
-                if stock_info and stock_info.marketCap > 0:
-                    stocks.append({
-                        "symbol": stock_info.symbol,
-                        "name": stock_info.name,
-                        "price": stock_info.currentPrice,
-                        "change": stock_info.change,
-                        "changePercent": stock_info.changePercent,
-                        "marketCap": stock_info.marketCap,
-                        "volume": stock_info.volume
-                    })
-            
-            # 실시간 시가총액 순으로 정렬
+            # 시가총액 순으로 정렬
             stocks.sort(key=lambda x: x.get("marketCap", 0), reverse=True)
             
-            # 캐시에 저장
-            self._set_cache(self._get_cache_key('INDEX_STOCKS', index_name=index_name), stocks)
+            print(f"✅ Mock index stocks: Returned {len(stocks)} stocks for {index_name}")
+            for stock in stocks[:5]:  # 상위 5개만 로깅
+                print(f"   {stock['symbol']}: ${stock['price']:.2f} ({stock['changePercent']:+.2f}%)")
             
-            return stocks[:10]  # 상위 10개 반환
+            # 캐시에 저장 (10분)
+            self._set_cache(self._get_cache_key('INDEX_STOCKS', index_name=index_name), stocks, 600)
+            
+            return stocks
             
         except Exception as e:
-            raise Exception(f"Failed to get index stocks for {index_name}: {str(e)}")
+            print(f"❌ Error in get_index_stocks: {e}")
+            return []
 
     async def get_stock_info_batch(self, tickers: List[str]) -> List[Optional[StockInfo]]:
         """배치로 주식 정보 가져오기 (API 제한 방지)"""
