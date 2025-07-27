@@ -5,6 +5,7 @@ import requests
 import asyncio
 from datetime import datetime, timedelta
 from ..models.stock import StockInfo, ChartData, ChartDataPoint, StockSuggestion, FinancialData, DividendData
+from requests.exceptions import HTTPError
 
 class StockService:
     def __init__(self):
@@ -157,91 +158,142 @@ class StockService:
             print(f"Translation error: {e}")
             return text
     
-    async def get_stock_info(self, symbol: str) -> StockInfo:
-        """개별 주식 정보 조회"""
+    async def get_stock_info(self, symbol: str) -> Optional[StockInfo]:
+        """Get detailed stock information for a single symbol"""
+        print(f"🔄 Fetching stock info for {symbol}")
+        
+        # 캐시 확인
+        cache_key = f"stock_info_{symbol}"
+        cached_data = self._get_cache(cache_key)
+        if cached_data:
+            print(f"✅ Using cached data for {symbol}")
+            return cached_data
+        
+        # Rate limiting: 더 긴 대기 시간 적용
+        await asyncio.sleep(2.0)  # 1.0s → 2.0s로 증가
+        
         try:
-            # 캐시된 데이터 사용
-            cache_key = self._get_cache_key('STOCK_INFO', symbol=symbol)
-            cached_data = self._get_cache(cache_key)
-            if cached_data:
-                return cached_data
-
-            print(f"Fetching stock info for {symbol}")
-            
-            # Yahoo Finance API 호출
             ticker = yf.Ticker(symbol)
             
-            # API 제한 방지를 위한 지연
-            await asyncio.sleep(0.2)  # 200ms 지연
+            # 첫 번째 시도: ticker.info 사용
+            try:
+                info = ticker.info
+                print(f" Raw info for {symbol}: {len(info)} fields")
+                
+                # 사용 가능한 필드 로깅
+                print(f"🔍 Available fields for {symbol}:")
+                for key, value in list(info.items())[:10]:  # 처음 10개만 로깅
+                    print(f"   {key}: {value}")
+                
+            except Exception as e:
+                print(f"⚠️ ticker.info failed for {symbol}: {e}")
+                # 대안: ticker.history 사용
+                try:
+                    history = ticker.history(period="1d")
+                    if not history.empty:
+                        latest = history.iloc[-1]
+                        info = {
+                            'longName': symbol,
+                            'currentPrice': float(latest['Close']),
+                            'regularMarketVolume': int(latest['Volume']),
+                            'fullExchangeName': 'NASDAQ',  # 기본값
+                            'sector': 'Unknown',
+                            'industry': 'Unknown',
+                            'currency': 'USD'
+                        }
+                        print(f"✅ Using history fallback for {symbol}")
+                    else:
+                        print(f"❌ No history data for {symbol}")
+                        return None
+                except Exception as history_error:
+                    print(f"❌ History fallback also failed for {symbol}: {history_error}")
+                    return None
             
-            # 기본 정보 가져오기
-            info = ticker.info
-            
-            if not info:
-                raise Exception(f"No data available for {symbol}")
-            
-            # 주식 정보 생성
+            # StockInfo 객체 생성
             stock_info = StockInfo(
-                symbol=symbol.upper(),
+                symbol=symbol,
                 name=info.get('longName', symbol),
-                currentPrice=info.get('currentPrice', 0),
-                previousClose=info.get('previousClose', 0),
-                change=info.get('regularMarketChange', 0),
-                changePercent=info.get('regularMarketChangePercent', 0),
-                marketCap=info.get('marketCap', 0),
-                volume=info.get('volume', 0),
-                peRatio=info.get('trailingPE', 0),
-                dividendYield=info.get('dividendYield', 0),
-                sector=info.get('sector', ''),
-                industry=info.get('industry', ''),
-                description=info.get('longBusinessSummary', ''),
-                website=info.get('website', ''),
-                employees=info.get('fullTimeEmployees', 0),
-                country=info.get('country', ''),
-                currency=info.get('currency', 'USD')
+                currentPrice=info.get('currentPrice', 0.0),
+                previousClose=info.get('regularMarketPreviousClose', 0.0),
+                change=info.get('regularMarketChange', 0.0),
+                changePercent=info.get('regularMarketChangePercent', 0.0),
+                high=info.get('regularMarketDayHigh'),
+                low=info.get('regularMarketDayLow'),
+                volume=info.get('regularMarketVolume'),
+                marketCap=info.get('marketCap'),
+                peRatio=info.get('trailingPE'),
+                dividendYield=info.get('trailingAnnualDividendYield'),
+                beta=info.get('beta'),
+                fiftyTwoWeekHigh=info.get('fiftyTwoWeekHigh'),
+                fiftyTwoWeekLow=info.get('fiftyTwoWeekLow'),
+                avgVolume=info.get('averageDailyVolume3Month'),
+                currency=info.get('currency', 'USD'),
+                exchange=info.get('fullExchangeName', 'NASDAQ'),
+                sector=info.get('sector'),
+                industry=info.get('industry')
             )
             
-            # 캐시에 저장
-            self._set_cache(cache_key, stock_info)
+            print(f" Stock Info Details for {symbol}:")
+            print(f"   Name: {stock_info.name}")
+            print(f"   Price: ${stock_info.currentPrice}")
+            print(f"   High: ${stock_info.high}")
+            print(f"   Low: ${stock_info.low}")
+            print(f"   Volume: {stock_info.volume}")
+            print(f"   Market Cap: ${stock_info.marketCap}")
+            print(f"   Exchange: {stock_info.exchange}")
+            print(f"   Sector: {stock_info.sector}")
+            
+            # 캐시에 저장 (5분 → 10분으로 증가)
+            self._set_cache(cache_key, stock_info, 600)
             
             return stock_info
             
-        except Exception as e:
-            print(f"Error fetching stock info for {symbol}: {e}")
-            # Yahoo Finance API 제한 오류인 경우 더 긴 지연 후 재시도
-            if "429" in str(e) or "Too Many Requests" in str(e):
-                print(f"Rate limit hit for {symbol}, waiting 5 seconds...")
-                await asyncio.sleep(5)
-                # 한 번만 재시도
+        except HTTPError as e:
+            if e.response.status_code == 429:
+                print(f"⚠️ Rate limit hit for {symbol}, waiting 10 seconds...")
+                await asyncio.sleep(10.0)  # 5s → 10s로 증가
+                
+                # 재시도
                 try:
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(5.0)  # 추가 대기
                     ticker = yf.Ticker(symbol)
                     info = ticker.info
-                    if info:
-                        stock_info = StockInfo(
-                            symbol=symbol.upper(),
-                            name=info.get('longName', symbol),
-                            currentPrice=info.get('currentPrice', 0),
-                            previousClose=info.get('previousClose', 0),
-                            change=info.get('regularMarketChange', 0),
-                            changePercent=info.get('regularMarketChangePercent', 0),
-                            marketCap=info.get('marketCap', 0),
-                            volume=info.get('volume', 0),
-                            peRatio=info.get('trailingPE', 0),
-                            dividendYield=info.get('dividendYield', 0),
-                            sector=info.get('sector', ''),
-                            industry=info.get('industry', ''),
-                            description=info.get('longBusinessSummary', ''),
-                            website=info.get('website', ''),
-                            employees=info.get('fullTimeEmployees', 0),
-                            country=info.get('country', ''),
-                            currency=info.get('currency', 'USD')
-                        )
-                        return stock_info
+                    
+                    stock_info = StockInfo(
+                        symbol=symbol,
+                        name=info.get('longName', symbol),
+                        currentPrice=info.get('currentPrice', 0.0),
+                        previousClose=info.get('regularMarketPreviousClose', 0.0),
+                        change=info.get('regularMarketChange', 0.0),
+                        changePercent=info.get('regularMarketChangePercent', 0.0),
+                        high=info.get('regularMarketDayHigh'),
+                        low=info.get('regularMarketDayLow'),
+                        volume=info.get('regularMarketVolume'),
+                        marketCap=info.get('marketCap'),
+                        peRatio=info.get('trailingPE'),
+                        dividendYield=info.get('trailingAnnualDividendYield'),
+                        beta=info.get('beta'),
+                        fiftyTwoWeekHigh=info.get('fiftyTwoWeekHigh'),
+                        fiftyTwoWeekLow=info.get('fiftyTwoWeekLow'),
+                        avgVolume=info.get('averageDailyVolume3Month'),
+                        currency=info.get('currency', 'USD'),
+                        exchange=info.get('fullExchangeName', 'NASDAQ'),
+                        sector=info.get('sector'),
+                        industry=info.get('industry')
+                    )
+                    
+                    self._set_cache(cache_key, stock_info, 600)
+                    return stock_info
+                    
                 except Exception as retry_error:
-                    print(f"Retry failed for {symbol}: {retry_error}")
-            
-            raise Exception(f"Failed to fetch stock info for {symbol}: {str(e)}")
+                    print(f"❌ Retry failed for {symbol}: {retry_error}")
+                    return None
+            else:
+                print(f"❌ HTTP error for {symbol}: {e}")
+                return None
+        except Exception as e:
+            print(f"❌ Error fetching {symbol}: {e}")
+            return None
     
     async def get_stock_chart(self, symbol: str, period: str = "1y", interval: str = "1d") -> dict:
         """주식 차트 데이터 조회"""
@@ -304,53 +356,71 @@ class StockService:
     async def search_stocks(self, query: str, limit: int = 10) -> List[StockSuggestion]:
         """주식 검색 - 한글 검색 지원"""
         try:
+            print(f"🔍 Searching for: '{query}'")
+            
             # 한글 검색어를 영어로 변환
             english_query = self._translate_korean_to_english(query)
+            print(f"🔄 Translated to: '{english_query}'")
             
-            # 영어 쿼리로 Yahoo Finance 검색
-            search_results = yf.Tickers(english_query)
+            # 먼저 인기 주식에서 검색 (빠른 응답)
+            popular_suggestions = await self._search_popular_stocks(query, limit)
+            print(f"📊 Found {len(popular_suggestions)} popular matches")
             
-            # 검색 결과가 없으면 기본 인기 주식 목록에서 검색
-            if not search_results.tickers:
-                return await self._search_popular_stocks(query, limit)
+            # 인기 주식에서 충분한 결과를 찾았으면 반환
+            if len(popular_suggestions) >= limit:
+                return popular_suggestions[:limit]
             
-            suggestions = []
-            for ticker in search_results.tickers[:limit]:
-                try:
-                    # 티커 정보 가져오기
-                    ticker_info = ticker.info
+            # Yahoo Finance 검색 시도 (추가 결과용)
+            try:
+                # 영어 쿼리로 Yahoo Finance 검색
+                search_results = yf.Tickers(english_query)
+                
+                if search_results.tickers:
+                    print(f"🔍 Yahoo Finance found {len(search_results.tickers)} results")
                     
-                    # 기본 정보 추출
-                    symbol = ticker.ticker
-                    name = ticker_info.get("longName", ticker_info.get("shortName", ""))
-                    exchange = ticker_info.get("exchange", "")
+                    suggestions = []
+                    for ticker in search_results.tickers[:limit]:
+                        try:
+                            # 티커 정보 가져오기
+                            ticker_info = ticker.info
+                            
+                            # 기본 정보 추출
+                            symbol = ticker.ticker
+                            name = ticker_info.get("longName", ticker_info.get("shortName", ""))
+                            exchange = ticker_info.get("exchange", "")
+                            
+                            # 유효한 주식인지 확인 (가격 정보가 있는지)
+                            if ticker_info.get("currentPrice") or ticker_info.get("regularMarketPrice"):
+                                suggestions.append(StockSuggestion(
+                                    symbol=symbol,
+                                    name=name,
+                                    exchange=exchange,
+                                    type="Common Stock",
+                                    country="US"
+                                ))
+                        except Exception as e:
+                            print(f"⚠️ Error processing ticker {ticker.ticker}: {e}")
+                            continue
                     
-                    # 유효한 주식인지 확인 (가격 정보가 있는지)
-                    if ticker_info.get("currentPrice") or ticker_info.get("regularMarketPrice"):
-                        suggestions.append(StockSuggestion(
-                            symbol=symbol,
-                            name=name,
-                            exchange=exchange,
-                            type="Common Stock",
-                            country="US"
-                        ))
-                except Exception as e:
-                    # 개별 티커 오류는 무시하고 계속 진행
-                    continue
+                    # 인기 주식 결과와 합치기
+                    existing_symbols = {s.symbol for s in popular_suggestions}
+                    for suggestion in suggestions:
+                        if suggestion.symbol not in existing_symbols:
+                            popular_suggestions.append(suggestion)
+                            if len(popular_suggestions) >= limit:
+                                break
+                else:
+                    print("⚠️ No Yahoo Finance results found")
+                    
+            except Exception as e:
+                print(f"⚠️ Yahoo Finance search failed: {e}")
             
-            # 검색 결과가 부족하면 인기 주식에서 추가 검색
-            if len(suggestions) < limit:
-                popular_suggestions = await self._search_popular_stocks(query, limit - len(suggestions))
-                # 중복 제거
-                existing_symbols = {s.symbol for s in suggestions}
-                for suggestion in popular_suggestions:
-                    if suggestion.symbol not in existing_symbols:
-                        suggestions.append(suggestion)
-            
-            return suggestions[:limit]
+            print(f"✅ Total search results: {len(popular_suggestions)}")
+            return popular_suggestions[:limit]
             
         except Exception as e:
-            # Yahoo Finance 검색 실패 시 인기 주식에서 검색
+            print(f"❌ Search failed: {e}")
+            # 최종 fallback: 인기 주식에서만 검색
             return await self._search_popular_stocks(query, limit)
     
     async def _search_popular_stocks(self, query: str, limit: int = 10) -> List[StockSuggestion]:
@@ -538,6 +608,15 @@ class StockService:
             print(f"🔄 Fetching top market cap stocks for {len(top_tickers)} tickers")
             print(f"📊 Tickers: {', '.join(top_tickers)}")
             
+            # 임시: 단일 주식으로 테스트
+            print("🧪 Testing with single stock first...")
+            try:
+                test_stock = await self.get_stock_info("AAPL")
+                print(f"✅ Test successful: {test_stock.symbol} - ${test_stock.currentPrice}")
+            except Exception as test_error:
+                print(f"❌ Test failed: {test_error}")
+                return []
+            
             # 배치로 주식 정보 가져오기 (동시 처리)
             stock_infos = await self.get_stock_info_batch(top_tickers)
             
@@ -616,8 +695,8 @@ class StockService:
             if index_name not in index_constituents:
                 raise ValueError(f"Invalid index name: {index_name}. Must be one of: {list(index_constituents.keys())}")
             
-            # 선택된 지수의 구성 주식들
-            constituents = index_constituents[index_name]
+            # 선택된 지수의 구성 주식들 (상위 10개 처리)
+            constituents = index_constituents[index_name][:10]  # 상위 10개
             
             # 배치로 주식 정보 가져오기
             stock_infos = await self.get_stock_info_batch(constituents)
@@ -642,7 +721,7 @@ class StockService:
             # 캐시에 저장
             self._set_cache(self._get_cache_key('INDEX_STOCKS', index_name=index_name), stocks)
             
-            return stocks[:10]  # 상위 10개만 반환
+            return stocks[:10]  # 상위 10개 반환
             
         except Exception as e:
             raise Exception(f"Failed to get index stocks for {index_name}: {str(e)}")
@@ -651,31 +730,36 @@ class StockService:
         """배치로 주식 정보 가져오기 (동시 처리 제한)"""
         async def fetch_single_stock(ticker: str) -> Optional[StockInfo]:
             try:
-                print(f"Fetching stock info for {ticker}")
-                # Yahoo Finance API 제한 방지를 위한 지연
-                await asyncio.sleep(0.5)  # 500ms 지연
+                print(f"🔄 Fetching stock info for {ticker}")
+                # Yahoo Finance API 제한 방지를 위한 더 긴 지연
+                await asyncio.sleep(3.0)  # 1.5s → 3.0s로 증가
                 return await self.get_stock_info(ticker)
             except Exception as e:
-                print(f"Error fetching {ticker}: {e}")
+                print(f"❌ Error fetching {ticker}: {e}")
                 return None
 
         async def fetch_with_semaphore(ticker: str) -> Optional[StockInfo]:
             async with self.request_semaphore:
                 return await fetch_single_stock(ticker)
 
-        # 동시 처리로 주식 정보 가져오기
+        # 동시 처리로 주식 정보 가져오기 (더 안정적인 방법)
+        print(f"🚀 Starting batch fetch for {len(tickers)} tickers")
         tasks = [fetch_with_semaphore(ticker) for ticker in tickers]
         results = await asyncio.gather(*tasks, return_exceptions=True)
         
         # 예외 처리
         stock_infos = []
-        for result in results:
+        success_count = 0
+        for i, result in enumerate(results):
             if isinstance(result, Exception):
-                print(f"Exception in batch fetch: {result}")
+                print(f"❌ Exception in batch fetch for {tickers[i]}: {result}")
                 stock_infos.append(None)
             else:
                 stock_infos.append(result)
+                if result:
+                    success_count += 1
         
+        print(f"✅ Batch fetch completed: {success_count}/{len(tickers)} successful")
         return stock_infos
 
     # get_index_constituents 메서드는 get_index_stocks로 통합되었으므로 제거 

@@ -234,7 +234,24 @@ async def get_index_stocks(
         if index_name not in valid_indices:
             raise HTTPException(status_code=400, detail="Invalid index name. Must be one of: dow, nasdaq, sp500, russell2000")
         
+        # 캐시 확인 (먼저 빠른 응답)
+        cache_key = f"index_stocks_{index_name}"
+        cached_data = stock_service._get_cache(cache_key)
+        if cached_data:
+            logger.info(f"Using cached data for {index_name} index")
+            return ApiResponse(
+                success=True,
+                data=cached_data,
+                message=f"Top stocks for {index_name.upper()} retrieved from cache"
+            )
+        
+        # 캐시가 없으면 새로 가져오기
+        logger.info(f"Fetching fresh data for {index_name} index")
         index_stocks = await stock_service.get_index_stocks(index_name)
+        
+        # 캐시에 저장 (5분)
+        stock_service._set_cache(cache_key, index_stocks, 300)
+        
         return ApiResponse(
             success=True,
             data=index_stocks,
