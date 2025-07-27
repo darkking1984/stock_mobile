@@ -50,7 +50,8 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "https://stock-mobile.vercel.app",  # Vercel 프론트엔드 URL
-        "https://stock-mobile-adxqa4s20-boris-projects-ee8b76c6.vercel.app",  # 현재 Vercel URL
+        "https://stock-mobile-adxqa4s20-boris-projects-ee8b76c6.vercel.app",  # 이전 Vercel URL
+        "https://stock-mobile-fpkad4kro-boris-projects-ee8b76c6.vercel.app",  # 현재 Vercel URL
         "https://*.vercel.app",  # Vercel 프리뷰 URL
         "https://*.onrender.com",  # Render 백엔드 URL
     ],
