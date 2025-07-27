@@ -727,39 +727,91 @@ class StockService:
             raise Exception(f"Failed to get index stocks for {index_name}: {str(e)}")
 
     async def get_stock_info_batch(self, tickers: List[str]) -> List[Optional[StockInfo]]:
-        """배치로 주식 정보 가져오기 (동시 처리 제한)"""
-        async def fetch_single_stock(ticker: str) -> Optional[StockInfo]:
-            try:
-                print(f"🔄 Fetching stock info for {ticker}")
-                # Yahoo Finance API 제한 방지를 위한 더 긴 지연
-                await asyncio.sleep(3.0)  # 1.5s → 3.0s로 증가
-                return await self.get_stock_info(ticker)
-            except Exception as e:
-                print(f"❌ Error fetching {ticker}: {e}")
-                return None
+        """배치로 주식 정보 가져오기 (API 제한 방지)"""
+        async def fetch_single_stock_with_retry(ticker: str, max_retries: int = 5) -> Optional[StockInfo]:
+            for attempt in range(max_retries):
+                try:
+                    print(f"🔄 Fetching stock info for {ticker} (attempt {attempt + 1}/{max_retries})")
+                    
+                    # API 제한 방지를 위한 지연 (점진적 증가)
+                    # 배포 환경 감지
+                    import os
+                    is_production = os.getenv('RENDER', False) or os.getenv('VERCEL', False)
+                    
+                    if is_production:
+                        delay = 10.0 + (attempt * 5.0)  # 배포: 10s, 15s, 20s
+                    else:
+                        delay = 5.0 + (attempt * 2.0)   # 로컬: 5s, 7s, 9s
+                    
+                    print(f"⏳ Waiting {delay}s before request (attempt {attempt + 1})")
+                    await asyncio.sleep(delay)
+                    
+                    result = await self.get_stock_info(ticker)
+                    if result:
+                        print(f"✅ Successfully fetched {ticker}")
+                        return result
+                    else:
+                        print(f"⚠️ No data for {ticker}")
+                        return None
+                        
+                except Exception as e:
+                    error_msg = str(e)
+                    print(f"❌ Error fetching {ticker} (attempt {attempt + 1}): {error_msg}")
+                    
+                    # 429 오류인 경우 더 긴 지연
+                    if "429" in error_msg or "Too Many Requests" in error_msg:
+                        print(f"🛑 Rate limit hit for {ticker}, waiting longer...")
+                        # 배포 환경에서는 더 긴 지연
+                        import os
+                        is_production = os.getenv('RENDER', False) or os.getenv('VERCEL', False)
+                        
+                        if is_production:
+                            wait_time = 30.0 + (attempt * 15.0)  # 배포: 30s, 45s, 60s
+                        else:
+                            wait_time = 10.0 + (attempt * 5.0)   # 로컬: 10s, 15s, 20s
+                        
+                        print(f"⏳ Waiting {wait_time}s due to rate limit...")
+                        await asyncio.sleep(wait_time)
+                    
+                    if attempt == max_retries - 1:
+                        print(f"❌ Failed to fetch {ticker} after {max_retries} attempts")
+                        return None
+            
+            return None
 
         async def fetch_with_semaphore(ticker: str) -> Optional[StockInfo]:
             async with self.request_semaphore:
-                return await fetch_single_stock(ticker)
+                return await fetch_single_stock_with_retry(ticker)
 
-        # 동시 처리로 주식 정보 가져오기 (더 안정적인 방법)
-        print(f"🚀 Starting batch fetch for {len(tickers)} tickers")
-        tasks = [fetch_with_semaphore(ticker) for ticker in tickers]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        
-        # 예외 처리
+        # 순차 처리로 변경 (API 제한 방지)
+        print(f"🚀 Starting sequential fetch for {len(tickers)} tickers")
         stock_infos = []
         success_count = 0
-        for i, result in enumerate(results):
-            if isinstance(result, Exception):
-                print(f"❌ Exception in batch fetch for {tickers[i]}: {result}")
-                stock_infos.append(None)
-            else:
-                stock_infos.append(result)
-                if result:
-                    success_count += 1
         
-        print(f"✅ Batch fetch completed: {success_count}/{len(tickers)} successful")
+        # 배포 환경 감지
+        import os
+        is_production = os.getenv('RENDER', False) or os.getenv('VERCEL', False)
+        
+        for i, ticker in enumerate(tickers):
+            print(f"📊 Processing {i+1}/{len(tickers)}: {ticker}")
+            
+            # 배포 환경에서는 더 긴 지연
+            if is_production:
+                print(f"🌐 Production environment detected, using extended delays")
+                await asyncio.sleep(8.0)  # 배포 환경에서 8초 지연
+            
+            result = await fetch_with_semaphore(ticker)
+            stock_infos.append(result)
+            if result:
+                success_count += 1
+                print(f"✅ Progress: {success_count}/{len(tickers)} successful")
+            
+            # 배포 환경에서 추가 지연
+            if is_production and i < len(tickers) - 1:
+                print(f"⏳ Production delay between requests...")
+                await asyncio.sleep(5.0)
+        
+        print(f"✅ Sequential fetch completed: {success_count}/{len(tickers)} successful")
         return stock_infos
 
     # get_index_constituents 메서드는 get_index_stocks로 통합되었으므로 제거 
