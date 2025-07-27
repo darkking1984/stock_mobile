@@ -14,23 +14,21 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS 설정 - 모바일 접근 허용
+# CORS 설정 - Render 배포용
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "http://192.168.0.15:3000",
         "http://127.0.0.1:3000",
-        "https://your-domain.vercel.app",
-        # 모바일 접근을 위한 추가 설정
-        "http://192.168.0.15:3000",  # 특정 IP 명시
-        "http://192.168.1.100:3000",  # 다른 가능한 IP
-        "http://10.0.0.100:3000",     # 다른 가능한 IP
+        "https://stock-mobile.vercel.app",  # Vercel 프론트엔드 URL
+        "https://stock-mobile-adxqa4s20-boris-projects-ee8b76c6.vercel.app",  # 현재 Vercel URL
+        "https://*.vercel.app",  # Vercel 프리뷰 URL
+        "https://*.onrender.com",  # Render 백엔드 URL
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],  # 헤더 노출 허용
+    expose_headers=["*"],
 )
 
 # 라우터 등록

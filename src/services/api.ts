@@ -14,8 +14,8 @@ const getApiBaseUrl = () => {
     return `http://${hostname}:${port}`;
   }
   
-  // 프로덕션 환경에서는 상대 경로 사용
-  return '';
+  // 프로덕션 환경에서는 Render 백엔드 URL 사용
+  return 'https://stock-backend-6e1s.onrender.com';
 };
 
 const API_BASE_URL = getApiBaseUrl();
