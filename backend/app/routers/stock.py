@@ -19,7 +19,7 @@ from ..models.stock import (
     ChartType
 )
 
-router = APIRouter(prefix="/stock", tags=["stocks"])
+router = APIRouter(prefix="/stocks", tags=["stocks"])
 stock_service = StockService()
 
 logger = logging.getLogger(__name__)

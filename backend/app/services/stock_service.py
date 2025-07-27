@@ -158,56 +158,90 @@ class StockService:
             return text
     
     async def get_stock_info(self, symbol: str) -> StockInfo:
-        """주식 기본 정보 조회 (캐시 적용)"""
+        """개별 주식 정보 조회"""
         try:
-            # 캐시된 데이터 확인
+            # 캐시된 데이터 사용
             cache_key = self._get_cache_key('STOCK_INFO', symbol=symbol)
-            cached_data = self._get_cache(cache_key, duration=120)  # 2분 캐시
-            
+            cached_data = self._get_cache(cache_key)
             if cached_data:
-                print(f"Returning cached stock info for {symbol}")
                 return cached_data
-            
+
             print(f"Fetching stock info for {symbol}")
             
+            # Yahoo Finance API 호출
             ticker = yf.Ticker(symbol)
+            
+            # API 제한 방지를 위한 지연
+            await asyncio.sleep(0.2)  # 200ms 지연
+            
+            # 기본 정보 가져오기
             info = ticker.info
             
-            current_price = info.get("currentPrice", 0)
-            previous_close = info.get("previousClose", 0)
-            change = current_price - previous_close
-            change_percent = (change / previous_close * 100) if previous_close > 0 else 0
+            if not info:
+                raise Exception(f"No data available for {symbol}")
             
+            # 주식 정보 생성
             stock_info = StockInfo(
-                symbol=symbol,
-                name=info.get("longName", ""),
-                currentPrice=current_price,
-                previousClose=previous_close,
-                change=change,
-                changePercent=change_percent,
-                high=info.get("dayHigh", 0),
-                low=info.get("dayLow", 0),
-                volume=info.get("volume", 0),
-                marketCap=info.get("marketCap", 0),
-                pe=info.get("trailingPE", 0),
-                dividendYield=info.get("dividendYield", 0),
-                beta=info.get("beta", 0),
-                fiftyTwoWeekHigh=info.get("fiftyTwoWeekHigh", 0),
-                fiftyTwoWeekLow=info.get("fiftyTwoWeekLow", 0),
-                avgVolume=info.get("averageVolume", 0),
-                currency=info.get("currency", "USD"),
-                exchange=info.get("exchange", ""),
-                sector=info.get("sector", ""),
-                industry=info.get("industry", "")
+                symbol=symbol.upper(),
+                name=info.get('longName', symbol),
+                currentPrice=info.get('currentPrice', 0),
+                previousClose=info.get('previousClose', 0),
+                change=info.get('regularMarketChange', 0),
+                changePercent=info.get('regularMarketChangePercent', 0),
+                marketCap=info.get('marketCap', 0),
+                volume=info.get('volume', 0),
+                peRatio=info.get('trailingPE', 0),
+                dividendYield=info.get('dividendYield', 0),
+                sector=info.get('sector', ''),
+                industry=info.get('industry', ''),
+                description=info.get('longBusinessSummary', ''),
+                website=info.get('website', ''),
+                employees=info.get('fullTimeEmployees', 0),
+                country=info.get('country', ''),
+                currency=info.get('currency', 'USD')
             )
             
             # 캐시에 저장
-            self._set_cache(cache_key, stock_info, duration=120)
+            self._set_cache(cache_key, stock_info)
             
             return stock_info
             
         except Exception as e:
-            raise ValueError(f"Failed to fetch stock info for {symbol}: {str(e)}")
+            print(f"Error fetching stock info for {symbol}: {e}")
+            # Yahoo Finance API 제한 오류인 경우 더 긴 지연 후 재시도
+            if "429" in str(e) or "Too Many Requests" in str(e):
+                print(f"Rate limit hit for {symbol}, waiting 5 seconds...")
+                await asyncio.sleep(5)
+                # 한 번만 재시도
+                try:
+                    await asyncio.sleep(1)
+                    ticker = yf.Ticker(symbol)
+                    info = ticker.info
+                    if info:
+                        stock_info = StockInfo(
+                            symbol=symbol.upper(),
+                            name=info.get('longName', symbol),
+                            currentPrice=info.get('currentPrice', 0),
+                            previousClose=info.get('previousClose', 0),
+                            change=info.get('regularMarketChange', 0),
+                            changePercent=info.get('regularMarketChangePercent', 0),
+                            marketCap=info.get('marketCap', 0),
+                            volume=info.get('volume', 0),
+                            peRatio=info.get('trailingPE', 0),
+                            dividendYield=info.get('dividendYield', 0),
+                            sector=info.get('sector', ''),
+                            industry=info.get('industry', ''),
+                            description=info.get('longBusinessSummary', ''),
+                            website=info.get('website', ''),
+                            employees=info.get('fullTimeEmployees', 0),
+                            country=info.get('country', ''),
+                            currency=info.get('currency', 'USD')
+                        )
+                        return stock_info
+                except Exception as retry_error:
+                    print(f"Retry failed for {symbol}: {retry_error}")
+            
+            raise Exception(f"Failed to fetch stock info for {symbol}: {str(e)}")
     
     async def get_stock_chart(self, symbol: str, period: str = "1y", interval: str = "1d") -> dict:
         """주식 차트 데이터 조회"""
@@ -614,42 +648,33 @@ class StockService:
             raise Exception(f"Failed to get index stocks for {index_name}: {str(e)}")
 
     async def get_stock_info_batch(self, tickers: List[str]) -> List[Optional[StockInfo]]:
-        """여러 주식 정보를 배치로 가져오기"""
-        # 캐시된 데이터 사용
-        cache_key = self._get_cache_key('BATCH_STOCKS', tickers=tickers)
-        cached_data = self._get_cache(cache_key)
-        
-        if cached_data:
-            print(f"Returning cached batch stocks for {len(tickers)} tickers")
-            return cached_data
-
+        """배치로 주식 정보 가져오기 (동시 처리 제한)"""
         async def fetch_single_stock(ticker: str) -> Optional[StockInfo]:
             try:
+                print(f"Fetching stock info for {ticker}")
+                # Yahoo Finance API 제한 방지를 위한 지연
+                await asyncio.sleep(0.5)  # 500ms 지연
                 return await self.get_stock_info(ticker)
             except Exception as e:
                 print(f"Error fetching {ticker}: {e}")
                 return None
-        
-        # 동시 요청 제한 (최대 3개)
-        semaphore = asyncio.Semaphore(self.max_concurrent_requests)
-        
+
         async def fetch_with_semaphore(ticker: str) -> Optional[StockInfo]:
-            async with semaphore:
+            async with self.request_semaphore:
                 return await fetch_single_stock(ticker)
-        
+
+        # 동시 처리로 주식 정보 가져오기
         tasks = [fetch_with_semaphore(ticker) for ticker in tickers]
         results = await asyncio.gather(*tasks, return_exceptions=True)
         
-        # 결과 필터링
+        # 예외 처리
         stock_infos = []
         for result in results:
-            if isinstance(result, StockInfo) and result is not None:
+            if isinstance(result, Exception):
+                print(f"Exception in batch fetch: {result}")
+                stock_infos.append(None)
+            else:
                 stock_infos.append(result)
-            elif isinstance(result, Exception):
-                print(f"Task failed with exception: {result}")
-        
-        # 캐시에 저장
-        self._set_cache(cache_key, stock_infos)
         
         return stock_infos
 
