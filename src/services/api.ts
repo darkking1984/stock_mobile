@@ -2,25 +2,30 @@ import axios, { AxiosResponse, AxiosError } from 'axios';
 
 // 모바일과 데스크톱 모두에서 접근 가능하도록 설정
 const getApiBaseUrl = () => {
+  // 프로덕션 환경에서는 항상 Render 백엔드 URL 사용
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://stock-backend-6e1s.onrender.com';
+  }
+  
   // 환경 변수가 설정되어 있으면 사용
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL;
   }
   
   // 개발 환경에서는 현재 호스트의 IP를 사용 (모바일 호환)
-  if (process.env.NODE_ENV === 'development') {
-    const hostname = window.location.hostname;
-    const port = '8000'; // 백엔드 포트
-    return `http://${hostname}:${port}`;
-  }
-  
-  // 프로덕션 환경에서는 Render 백엔드 URL 사용
-  return 'https://stock-backend-6e1s.onrender.com';
+  const hostname = window.location.hostname;
+  const port = '8000'; // 백엔드 포트
+  return `http://${hostname}:${port}`;
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
+console.log('=== API Configuration ===');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
 console.log('API Base URL:', API_BASE_URL);
+console.log('Current URL:', window.location.href);
+console.log('========================');
 
 const api = axios.create({
   baseURL: API_BASE_URL,
